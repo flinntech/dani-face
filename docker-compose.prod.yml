@@ -1,0 +1,57 @@
+version: '3.8'
+
+# Production configuration - HTTPS enabled
+services:
+  dani-webchat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dani-webchat-prod
+    restart: always
+    ports:
+      - "3000:3000"      # HTTP port (will redirect to HTTPS)
+      - "3443:3443"      # HTTPS port
+    environment:
+      # Server Configuration
+      - NODE_ENV=production
+      - PORT=3000
+      - HTTPS_PORT=3443
+
+      # SSL/TLS Configuration (ENABLED for production)
+      - ENABLE_HTTPS=true
+      - SSL_CERT_PATH=/app/certs/cert.pem
+      - SSL_KEY_PATH=/app/certs/key.pem
+
+      # Agent Configuration
+      - AGENT_URL=http://dani-agent:8080/chat
+
+      # Security - IMPORTANT: Update these for production!
+      - CORS_ORIGIN=https://your-domain.com
+      - RATE_LIMIT_WINDOW_MS=60000
+      - RATE_LIMIT_MAX_REQUESTS=100
+
+      # Session - IMPORTANT: Change this secret!
+      - SESSION_SECRET=${SESSION_SECRET}
+    volumes:
+      # SSL certificates MUST be mounted for production
+      - ./certs:/app/certs:ro
+    networks:
+      - root_default
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  root_default:
+    external: true

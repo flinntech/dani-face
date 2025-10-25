@@ -1,0 +1,42 @@
+version: '3.8'
+
+# Development configuration - HTTP only
+services:
+  dani-webchat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dani-webchat-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"      # HTTP port only
+    environment:
+      # Server Configuration
+      - NODE_ENV=development
+      - PORT=3000
+
+      # SSL/TLS Configuration (disabled for development)
+      - ENABLE_HTTPS=false
+
+      # Agent Configuration (use localhost for local development)
+      - AGENT_URL=${AGENT_URL:-http://dani-agent:8080/chat}
+
+      # Security
+      - CORS_ORIGIN=http://localhost:3000
+      - RATE_LIMIT_WINDOW_MS=60000
+      - RATE_LIMIT_MAX_REQUESTS=1000  # Higher limit for development
+
+      # Session
+      - SESSION_SECRET=dev-secret-not-for-production
+    networks:
+      - root_default
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  root_default:
+    external: true
