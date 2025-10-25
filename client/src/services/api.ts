@@ -1,8 +1,17 @@
 import axios, { AxiosError } from 'axios';
 import { ChatRequest, ChatResponse, ErrorResponse } from '../types/message.types';
+import { authService } from './authService';
 
 // API base URL - uses window.location for dynamic URL
 const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api`;
+
+/**
+ * Get auth headers for API requests
+ */
+const getAuthHeaders = () => {
+  const token = authService.getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 /**
  * Send a chat message to the DANI agent
@@ -23,6 +32,7 @@ export const sendChatMessage = async (
       {
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         timeout: 130000, // 130 seconds (slightly more than server timeout)
       }
