@@ -76,3 +76,22 @@ export interface ConversationState {
   isLoading: boolean;
   error: string | null;
 }
+
+/**
+ * Stored conversation metadata
+ */
+export interface StoredConversation {
+  id: string;
+  title: string;
+  createdAt: Date;
+  updatedAt: Date;
+  messages: Message[];
+}
+
+/**
+ * Conversation history (all stored conversations)
+ */
+export interface ConversationHistory {
+  conversations: StoredConversation[];
+  currentConversationId: string | null;
+}

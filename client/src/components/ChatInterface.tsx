@@ -5,21 +5,30 @@ import {
   MessageRole,
   MessageStatus,
   ConversationState,
+  StoredConversation,
 } from '../types/message.types';
 import { sendChatMessage } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import ConversationSidebar from './ConversationSidebar';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import WelcomeMessage from './WelcomeMessage';
+import {
+  loadConversations,
+  saveConversations,
+  getCurrentConversationId,
+  setCurrentConversationId,
+  createConversation,
+  updateConversation,
+  deleteConversation as deleteConversationFromStorage,
+  getConversation,
+} from '../services/conversationStorage';
 import '../styles/ChatInterface.css';
 
-const CONVERSATION_STORAGE_KEY = 'dani-conversation';
-const CONVERSATION_ID_KEY = 'dani-conversation-id';
-
 /**
- * Main chat interface component
+ * Main chat interface component with conversation history
  */
 const ChatInterface: React.FC = () => {
+  const [conversations, setConversations] = useState<StoredConversation[]>([]);
   const [conversation, setConversation] = useState<ConversationState>({
     conversationId: '',
     messages: [],
@@ -27,46 +36,40 @@ const ChatInterface: React.FC = () => {
     error: null,
   });
 
-  // Initialize conversation from localStorage or create new one
+  // Load conversations on mount
   useEffect(() => {
-    const storedConversationId = sessionStorage.getItem(CONVERSATION_ID_KEY);
-    const storedMessages = localStorage.getItem(CONVERSATION_STORAGE_KEY);
+    const loadedConversations = loadConversations();
+    setConversations(loadedConversations);
 
-    let conversationId = storedConversationId;
-    if (!conversationId) {
-      conversationId = uuidv4();
-      sessionStorage.setItem(CONVERSATION_ID_KEY, conversationId);
+    // Get or create current conversation
+    let currentId = getCurrentConversationId();
+    if (!currentId || !getConversation(loadedConversations, currentId)) {
+      // No current conversation or it doesn't exist, create new one
+      currentId = uuidv4();
+      const newConv = createConversation(currentId);
+      setConversations([newConv, ...loadedConversations]);
+      saveConversations([newConv, ...loadedConversations]);
+      setCurrentConversationId(currentId);
     }
 
-    let messages: Message[] = [];
-    if (storedMessages) {
-      try {
-        const parsed = JSON.parse(storedMessages);
-        messages = parsed.map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp),
-        }));
-      } catch (err) {
-        console.error('Failed to parse stored messages:', err);
-      }
+    // Load the current conversation
+    const current = getConversation(loadedConversations, currentId);
+    if (current) {
+      setConversation({
+        conversationId: current.id,
+        messages: current.messages,
+        isLoading: false,
+        error: null,
+      });
     }
-
-    setConversation((prev) => ({
-      ...prev,
-      conversationId,
-      messages,
-    }));
   }, []);
 
-  // Save messages to localStorage whenever they change
+  // Save conversations whenever they change
   useEffect(() => {
-    if (conversation.messages.length > 0) {
-      localStorage.setItem(
-        CONVERSATION_STORAGE_KEY,
-        JSON.stringify(conversation.messages)
-      );
+    if (conversations.length > 0) {
+      saveConversations(conversations);
     }
-  }, [conversation.messages]);
+  }, [conversations]);
 
   const handleSendMessage = async (content: string) => {
     // Create user message
@@ -79,22 +82,23 @@ const ChatInterface: React.FC = () => {
     };
 
     // Add user message to conversation
+    const updatedMessages = [...conversation.messages, userMessage];
     setConversation((prev) => ({
       ...prev,
-      messages: [...prev.messages, userMessage],
+      messages: updatedMessages,
       isLoading: true,
       error: null,
     }));
 
     try {
       // Mark user message as sent
+      const sentMessages = updatedMessages.map((msg) =>
+        msg.id === userMessage.id ? { ...msg, status: MessageStatus.SENT } : msg
+      );
+
       setConversation((prev) => ({
         ...prev,
-        messages: prev.messages.map((msg) =>
-          msg.id === userMessage.id
-            ? { ...msg, status: MessageStatus.SENT }
-            : msg
-        ),
+        messages: sentMessages,
       }));
 
       // Send message to agent
@@ -113,25 +117,27 @@ const ChatInterface: React.FC = () => {
       };
 
       // Add assistant message to conversation
+      const finalMessages = [...sentMessages, assistantMessage];
       setConversation((prev) => ({
         ...prev,
-        messages: [...prev.messages, assistantMessage],
+        messages: finalMessages,
         isLoading: false,
       }));
+
+      // Update conversation history
+      const updatedConversations = updateConversation(
+        conversations,
+        conversation.conversationId,
+        finalMessages
+      );
+      setConversations(updatedConversations);
     } catch (error) {
       console.error('Failed to send message:', error);
 
       // Mark user message as error
-      setConversation((prev) => ({
-        ...prev,
-        messages: prev.messages.map((msg) =>
-          msg.id === userMessage.id
-            ? { ...msg, status: MessageStatus.ERROR }
-            : msg
-        ),
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'An error occurred',
-      }));
+      const errorMessages = updatedMessages.map((msg) =>
+        msg.id === userMessage.id ? { ...msg, status: MessageStatus.ERROR } : msg
+      );
 
       // Create error message from assistant
       const errorMessage: Message = {
@@ -144,18 +150,30 @@ const ChatInterface: React.FC = () => {
         status: MessageStatus.RECEIVED,
       };
 
+      const finalMessages = [...errorMessages, errorMessage];
       setConversation((prev) => ({
         ...prev,
-        messages: [...prev.messages, errorMessage],
+        messages: finalMessages,
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'An error occurred',
       }));
+
+      // Update conversation history even with error
+      const updatedConversations = updateConversation(
+        conversations,
+        conversation.conversationId,
+        finalMessages
+      );
+      setConversations(updatedConversations);
     }
   };
 
   const handleNewConversation = () => {
     const newConversationId = uuidv4();
-    sessionStorage.setItem(CONVERSATION_ID_KEY, newConversationId);
-    localStorage.removeItem(CONVERSATION_STORAGE_KEY);
+    const newConv = createConversation(newConversationId);
 
+    setConversations([newConv, ...conversations]);
+    setCurrentConversationId(newConversationId);
     setConversation({
       conversationId: newConversationId,
       messages: [],
@@ -164,57 +182,78 @@ const ChatInterface: React.FC = () => {
     });
   };
 
+  const handleSelectConversation = (conversationId: string) => {
+    const selected = getConversation(conversations, conversationId);
+    if (selected) {
+      setCurrentConversationId(conversationId);
+      setConversation({
+        conversationId: selected.id,
+        messages: selected.messages,
+        isLoading: false,
+        error: null,
+      });
+    }
+  };
+
+  const handleDeleteConversation = (conversationId: string) => {
+    const updatedConversations = deleteConversationFromStorage(conversations, conversationId);
+    setConversations(updatedConversations);
+
+    // If we deleted the current conversation, switch to another or create new
+    if (conversationId === conversation.conversationId) {
+      if (updatedConversations.length > 0) {
+        // Switch to the first conversation
+        const firstConv = updatedConversations[0];
+        setCurrentConversationId(firstConv.id);
+        setConversation({
+          conversationId: firstConv.id,
+          messages: firstConv.messages,
+          isLoading: false,
+          error: null,
+        });
+      } else {
+        // No conversations left, create a new one
+        handleNewConversation();
+      }
+    }
+  };
+
   return (
-    <div className="chat-interface">
-      <div className="chat-interface-header">
-        <button
-          className="new-conversation-button"
-          onClick={handleNewConversation}
-          disabled={conversation.isLoading}
-          title="Start a new conversation"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          New Chat
-        </button>
-      </div>
+    <div className="chat-interface-with-sidebar">
+      <ConversationSidebar
+        conversations={conversations}
+        currentConversationId={conversation.conversationId}
+        onSelectConversation={handleSelectConversation}
+        onNewConversation={handleNewConversation}
+        onDeleteConversation={handleDeleteConversation}
+      />
+      <div className="chat-interface">
+        <main className="chat-main">
+          {conversation.messages.length === 0 ? (
+            <WelcomeMessage />
+          ) : (
+            <MessageList
+              messages={conversation.messages}
+              isLoading={conversation.isLoading}
+            />
+          )}
+        </main>
 
-      <main className="chat-main">
-        {conversation.messages.length === 0 ? (
-          <WelcomeMessage />
-        ) : (
-          <MessageList
-            messages={conversation.messages}
-            isLoading={conversation.isLoading}
+        <footer className="chat-footer">
+          <MessageInput
+            onSendMessage={handleSendMessage}
+            disabled={conversation.isLoading}
+            placeholder={
+              conversation.isLoading
+                ? 'Waiting for response...'
+                : 'Ask DANI anything about your network infrastructure...'
+            }
           />
-        )}
-      </main>
-
-      <footer className="chat-footer">
-        <MessageInput
-          onSendMessage={handleSendMessage}
-          disabled={conversation.isLoading}
-          placeholder={
-            conversation.isLoading
-              ? 'Waiting for response...'
-              : 'Ask DANI anything about your network infrastructure...'
-          }
-        />
-        <div className="footer-disclaimer">
-          <em>DANI can make mistakes. Please check all responses.</em>
-        </div>
-      </footer>
+          <div className="footer-disclaimer">
+            <em>DANI can make mistakes. Please check all responses.</em>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 };
