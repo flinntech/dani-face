@@ -1,0 +1,157 @@
+.welcome-message {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+}
+
+.welcome-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.welcome-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.welcome-subtitle {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.capabilities-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.capabilities-section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.capabilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.capability-card {
+  padding: var(--spacing-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.capability-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.capability-icon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.capability-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.capability-card p {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.getting-started {
+  padding: var(--spacing-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.getting-started h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.getting-started p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.getting-started ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.getting-started li {
+  padding: var(--spacing-sm) 0;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.getting-started li:last-child {
+  border-bottom: none;
+}
+
+.getting-started li::before {
+  content: '→';
+  margin-right: var(--spacing-sm);
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+.disclaimer {
+  text-align: center;
+  padding: var(--spacing-md);
+  background-color: rgba(37, 99, 235, 0.05);
+  border-radius: var(--radius-md);
+}
+
+.disclaimer p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .welcome-message {
+    padding: var(--spacing-md);
+  }
+
+  .welcome-header h1 {
+    font-size: 2rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 1rem;
+  }
+
+  .capabilities-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .capability-card {
+    padding: var(--spacing-md);
+  }
+
+  .getting-started {
+    padding: var(--spacing-md);
+  }
+}

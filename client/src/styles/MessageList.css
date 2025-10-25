@@ -1,0 +1,194 @@
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.message-role {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.message-timestamp {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.message-content {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  max-width: 85%;
+}
+
+/* User messages */
+.message-user .message-content {
+  background-color: var(--color-user-bg);
+  color: var(--color-user-text);
+  margin-left: auto;
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.user-message-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Assistant messages */
+.message-assistant .message-content {
+  background-color: var(--color-assistant-bg);
+  border: 1px solid var(--color-assistant-border);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+/* Message states */
+.message-sending .message-content {
+  opacity: 0.6;
+}
+
+.message-error .message-content {
+  border-color: var(--color-error);
+  background-color: #fee;
+}
+
+.message-error-text {
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin-top: var(--spacing-xs);
+}
+
+/* Message actions */
+.message-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.copy-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+.copy-button:hover {
+  background-color: var(--color-background);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Token info */
+.token-info {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.token-info summary {
+  cursor: pointer;
+  user-select: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.token-info summary:hover {
+  background-color: var(--color-background);
+  border-color: var(--color-primary);
+}
+
+.token-details {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+}
+
+.token-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xs) 0;
+}
+
+.token-row:not(:last-child) {
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-secondary);
+  border-radius: 50%;
+  animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .message-content {
+    max-width: 95%;
+    padding: var(--spacing-sm);
+  }
+}
