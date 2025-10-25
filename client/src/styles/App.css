@@ -5,3 +5,119 @@
   flex-direction: column;
   background-color: var(--color-background);
 }
+
+/* App Navigation */
+.app-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: linear-gradient(135deg, var(--color-dark-blue) 0%, var(--color-very-dark-blue) 100%);
+  color: white;
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+}
+
+.app-nav-brand h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.app-nav-links {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.app-nav-link {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.app-nav-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.app-nav-link.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.app-nav-user {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.app-nav-user-email {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.app-nav-logout {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.app-nav-logout:hover {
+  background: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.app-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive Navigation */
+@media (max-width: 768px) {
+  .app-nav {
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+
+  .app-nav-brand {
+    flex: 1;
+  }
+
+  .app-nav-user {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-nav-brand h1 {
+    font-size: 1.25rem;
+  }
+
+  .app-nav-link {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 0.875rem;
+  }
+
+  .app-nav-user-email {
+    font-size: 0.75rem;
+  }
+}

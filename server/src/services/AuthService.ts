@@ -5,9 +5,8 @@
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
-import { userDB } from './UserDatabase';
-import { User, JWTPayload, AuthResponse, SignupRequest, LoginRequest } from '../types/auth.types';
+import { userDB } from './UserDatabasePG';
+import { JWTPayload, AuthResponse, SignupRequest, LoginRequest } from '../types/auth.types';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '7d'; // Token expires in 7 days
@@ -20,7 +19,7 @@ export class AuthService {
   async signup(request: SignupRequest): Promise<AuthResponse> {
     try {
       // Check if user already exists
-      const existingUser = userDB.findByEmail(request.email);
+      const existingUser = await userDB.findByEmail(request.email);
       if (existingUser) {
         return {
           success: false,
@@ -49,15 +48,11 @@ export class AuthService {
       const passwordHash = await bcrypt.hash(request.password, SALT_ROUNDS);
 
       // Create user
-      const user: User = {
-        id: uuidv4(),
-        email: request.email.toLowerCase(),
+      const user = await userDB.createUser(
+        request.email.toLowerCase(),
         passwordHash,
-        name: request.name,
-        createdAt: new Date().toISOString(),
-      };
-
-      userDB.createUser(user);
+        request.name
+      );
 
       // Generate JWT token
       const token = this.generateToken({
@@ -86,7 +81,7 @@ export class AuthService {
   async login(request: LoginRequest): Promise<AuthResponse> {
     try {
       // Find user
-      const user = userDB.findByEmail(request.email);
+      const user = await userDB.findByEmail(request.email);
       if (!user) {
         return {
           success: false,
@@ -104,7 +99,7 @@ export class AuthService {
       }
 
       // Update last login
-      userDB.updateLastLogin(user.id);
+      await userDB.updateLastLogin(user.id);
 
       // Generate JWT token
       const token = this.generateToken({
@@ -149,13 +144,13 @@ export class AuthService {
   /**
    * Get user by token
    */
-  getUserFromToken(token: string) {
+  async getUserFromToken(token: string) {
     const payload = this.verifyToken(token);
     if (!payload) {
       return null;
     }
 
-    const user = userDB.findById(payload.userId);
+    const user = await userDB.findById(payload.userId);
     if (!user) {
       return null;
     }

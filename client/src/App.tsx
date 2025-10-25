@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ChatInterface from './components/ChatInterface';
+import LogsViewer from './components/LogsViewer';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './styles/App.css';
+
+type AppPage = 'chat' | 'logs';
 
 /**
  * Main App Content (inside AuthProvider)
  */
 const AppContent: React.FC = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, logout, user } = useAuth();
   const [showSignup, setShowSignup] = useState(false);
+  const [currentPage, setCurrentPage] = useState<AppPage>('chat');
 
   // Show loading state while checking auth
   if (loading) {
@@ -37,10 +41,37 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Show chat interface if authenticated
+  // Show navigation and current page if authenticated
   return (
     <div className="app">
-      <ChatInterface />
+      <nav className="app-nav">
+        <div className="app-nav-brand">
+          <h1>DANI</h1>
+        </div>
+        <div className="app-nav-links">
+          <button
+            className={`app-nav-link ${currentPage === 'chat' ? 'active' : ''}`}
+            onClick={() => setCurrentPage('chat')}
+          >
+            Chat
+          </button>
+          <button
+            className={`app-nav-link ${currentPage === 'logs' ? 'active' : ''}`}
+            onClick={() => setCurrentPage('logs')}
+          >
+            Logs
+          </button>
+        </div>
+        <div className="app-nav-user">
+          <span className="app-nav-user-email">{user?.email}</span>
+          <button className="app-nav-logout" onClick={logout}>
+            Logout
+          </button>
+        </div>
+      </nav>
+      <div className="app-content">
+        {currentPage === 'chat' ? <ChatInterface /> : <LogsViewer />}
+      </div>
     </div>
   );
 };

@@ -10,6 +10,8 @@ import https from 'https';
 import http from 'http';
 import chatRoutes from './routes/chat';
 import authRoutes from './routes/auth';
+import logsRoutes from './routes/logs';
+import { db } from './services/Database';
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -29,11 +31,11 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for React
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'], // Allow inline styles and Google Fonts
         scriptSrc: ["'self'"],
         imgSrc: ["'self'", 'data:', 'https:'],
         connectSrc: ["'self'"],
-        fontSrc: ["'self'", 'data:'],
+        fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'], // Allow Google Fonts
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
         frameSrc: ["'none'"],
@@ -86,6 +88,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/logs', logsRoutes);
 app.use('/api', chatRoutes);
 
 // Serve static files from React app (in production)
@@ -182,10 +185,23 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('\n⚠️  SIGINT received, shutting down gracefully...');
+  await db.disconnect();
   process.exit(0);
 });
 
-// Start the application
-startServers();
+// Initialize database and start the application
+async function initializeApp() {
+  try {
+    console.log('🔄 Initializing database connection...');
+    await db.connect();
+    console.log('🚀 Starting servers...');
+    startServers();
+  } catch (error) {
+    console.error('❌ Failed to initialize application:', error);
+    process.exit(1);
+  }
+}
+
+initializeApp();

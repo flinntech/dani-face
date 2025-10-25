@@ -7,7 +7,7 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { authService } from '../services/AuthService';
 import { requireAuth } from '../middleware/auth.middleware';
-import { userDB } from '../services/UserDatabase';
+import { userDB } from '../services/UserDatabasePG';
 import { SignupRequest, LoginRequest } from '../types/auth.types';
 
 const router = Router();
@@ -114,9 +114,9 @@ router.post(
  * GET /api/auth/me
  * Get current user profile
  */
-router.get('/me', requireAuth, (req: Request, res: Response) => {
+router.get('/me', requireAuth, async (req: Request, res: Response) => {
   try {
-    const user = userDB.findById(req.user!.userId);
+    const user = await userDB.findById(req.user!.userId);
     if (!user) {
       return res.status(404).json({
         error: 'Not Found',
@@ -141,7 +141,7 @@ router.get('/me', requireAuth, (req: Request, res: Response) => {
  * POST /api/auth/verify
  * Verify JWT token
  */
-router.post('/verify', (req: Request, res: Response) => {
+router.post('/verify', async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
     if (!token) {
@@ -151,7 +151,7 @@ router.post('/verify', (req: Request, res: Response) => {
       });
     }
 
-    const user = authService.getUserFromToken(token);
+    const user = await authService.getUserFromToken(token);
     if (!user) {
       return res.status(401).json({
         valid: false,
@@ -176,11 +176,20 @@ router.post('/verify', (req: Request, res: Response) => {
  * GET /api/auth/stats
  * Get authentication statistics (public)
  */
-router.get('/stats', (req: Request, res: Response) => {
-  return res.json({
-    totalUsers: userDB.getUserCount(),
-    registrationEnabled: true,
-  });
+router.get('/stats', async (req: Request, res: Response) => {
+  try {
+    const totalUsers = await userDB.getUserCount();
+    return res.json({
+      totalUsers,
+      registrationEnabled: true,
+    });
+  } catch (error) {
+    console.error('Stats error:', error);
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'An error occurred',
+    });
+  }
 });
 
 export default router;
