@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import axios, { AxiosError } from 'axios';
 import { ChatRequest, ChatResponse, ErrorResponse } from '../types/agent.types';
+import { requireAuth } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -14,6 +15,7 @@ const AGENT_URL = process.env.AGENT_URL || 'http://dani-agent:8080/chat';
  */
 router.post(
   '/chat',
+  requireAuth, // Require authentication
   [
     // Validation middleware
     body('message')
@@ -94,9 +96,10 @@ router.post(
 
         // Agent returned an error response
         if (axiosError.response) {
+          const errorData = axiosError.response.data as { message?: string };
           const errorResponse: ErrorResponse = {
             error: 'Agent Error',
-            message: axiosError.response.data?.message || 'An error occurred while processing your request.',
+            message: errorData?.message || 'An error occurred while processing your request.',
             statusCode: axiosError.response.status,
           };
           return res.status(axiosError.response.status).json(errorResponse);
