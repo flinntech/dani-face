@@ -7,6 +7,7 @@ import {
   ConversationState,
 } from '../types/message.types';
 import { sendChatMessage } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import WelcomeMessage from './WelcomeMessage';
@@ -163,32 +164,44 @@ const ChatInterface: React.FC = () => {
     });
   };
 
+  const { user, logout } = useAuth();
+
   return (
     <div className="chat-interface">
       <header className="chat-header">
         <div className="header-content">
           <h1 className="header-title">DANI WebChat</h1>
-          <button
-            className="new-conversation-button"
-            onClick={handleNewConversation}
-            disabled={conversation.isLoading}
-            title="Start a new conversation"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="header-actions">
+            <span className="user-name">👤 {user?.name}</span>
+            <button
+              className="new-conversation-button"
+              onClick={handleNewConversation}
+              disabled={conversation.isLoading}
+              title="Start a new conversation"
             >
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            New Chat
-          </button>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              New Chat
+            </button>
+            <button
+              className="logout-button"
+              onClick={logout}
+              title="Sign out"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </header>
 

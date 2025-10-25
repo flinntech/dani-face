@@ -9,6 +9,7 @@ import fs from 'fs';
 import https from 'https';
 import http from 'http';
 import chatRoutes from './routes/chat';
+import authRoutes from './routes/auth';
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -84,6 +85,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api', chatRoutes);
 
 // Serve static files from React app (in production)

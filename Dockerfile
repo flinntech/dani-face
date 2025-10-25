@@ -8,8 +8,8 @@ WORKDIR /app/client
 # Copy client package files
 COPY client/package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (including dev dependencies needed for build)
+RUN npm ci --legacy-peer-deps
 
 # Copy client source
 COPY client/ ./
@@ -42,7 +42,7 @@ WORKDIR /app
 # Install production dependencies for server
 COPY server/package*.json ./server/
 WORKDIR /app/server
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 WORKDIR /app
 
