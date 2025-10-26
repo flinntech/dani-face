@@ -11,6 +11,7 @@ import http from 'http';
 import chatRoutes from './routes/chat';
 import authRoutes from './routes/auth';
 import logsRoutes from './routes/logs';
+import settingsRoutes from './routes/settings';
 import { db } from './services/Database';
 
 // Load environment variables
@@ -89,6 +90,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/logs', logsRoutes);
+app.use('/api/settings', settingsRoutes);
 app.use('/api', chatRoutes);
 
 // Serve static files from React app (in production)

@@ -5,7 +5,7 @@
 
 import { Pool, PoolConfig, QueryResult, QueryResultRow } from 'pg';
 
-class Database {
+export class Database {
   private pool: Pool | null = null;
   private static instance: Database;
 

@@ -2,12 +2,20 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import axios, { AxiosError } from 'axios';
 import { ChatRequest, ChatResponse, ErrorResponse } from '../types/agent.types';
-import { requireAuth } from '../middleware/auth.middleware';
+import { requireAuth, AuthRequest } from '../middleware/auth.middleware';
+import { ApiKeysDatabase } from '../services/ApiKeysDatabase';
+import { getEncryptionService } from '../services/EncryptionService';
+import { Database } from '../services/Database';
 
 const router = Router();
 
 // Agent URL from environment variables
 const AGENT_URL = process.env.AGENT_URL || 'http://dani-agent:8080/chat';
+
+// Initialize API keys database
+const db = Database.getInstance();
+const encryption = getEncryptionService();
+const apiKeysDb = new ApiKeysDatabase(db, encryption);
 
 /**
  * POST /api/chat
@@ -33,7 +41,7 @@ router.post(
       .isLength({ max: 100 })
       .withMessage('Conversation ID too long'),
   ],
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -46,9 +54,26 @@ router.post(
     }
 
     const { message, conversationId } = req.body as ChatRequest;
+    const userId = req.user!.userId;
 
     try {
-      console.log(`[Chat] Sending message to agent for conversation ${conversationId}`);
+      console.log(`[Chat] Sending message to agent for conversation ${conversationId}, user ${userId}`);
+
+      // Fetch user's DRM API keys if configured
+      let drmApiKeys: { apiKeyId: string; apiKeySecret: string } | undefined;
+      try {
+        const credentials = await apiKeysDb.getApiKey(userId, 'drm');
+        if (credentials) {
+          drmApiKeys = {
+            apiKeyId: credentials.apiKeyId,
+            apiKeySecret: credentials.apiKeySecret,
+          };
+          console.log(`[Chat] Including DRM API keys for user ${userId}`);
+        }
+      } catch (error) {
+        console.error('[Chat] Error fetching user API keys:', error);
+        // Continue without API keys rather than failing the request
+      }
 
       // Forward request to DANI agent
       const response = await axios.post<ChatResponse>(
@@ -56,6 +81,8 @@ router.post(
         {
           message,
           conversationId,
+          userId,
+          drmApiKeys,
         },
         {
           headers: {

@@ -16,6 +16,11 @@ declare global {
   }
 }
 
+// Export typed request for use in route handlers
+export interface AuthRequest extends Request {
+  user?: JWTPayload;
+}
+
 /**
  * Middleware to require authentication
  */
