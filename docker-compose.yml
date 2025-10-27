@@ -29,8 +29,20 @@ services:
       - RATE_LIMIT_WINDOW_MS=60000
       - RATE_LIMIT_MAX_REQUESTS=100
 
-      # Session
+      # Authentication
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-random-64-char-string}
       - SESSION_SECRET=${SESSION_SECRET:-change-me-in-production}
+
+      # Encryption (for API key storage)
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+
+      # Database Configuration
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-dani}
+      - DB_USER=${DB_USER:-dani_db}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_SSL=${DB_SSL:-false}
     volumes:
       # Mount SSL certificates (optional, required if ENABLE_HTTPS=true)
       - ./certs:/app/certs:ro

@@ -4,6 +4,7 @@
  */
 
 import axios from 'axios';
+import { UserRole } from '../types/admin.types';
 
 const API_BASE = process.env.REACT_APP_API_URL || '/api';
 
@@ -11,6 +12,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  role: UserRole;
   createdAt: string;
   lastLogin?: string;
 }

@@ -10,6 +10,8 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
+  isPending: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   signup: (email: string, password: string, name: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
@@ -93,6 +95,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     loading,
     isAuthenticated: user !== null,
+    isAdmin: user?.role === 'admin',
+    isPending: user?.role === 'pending',
     login,
     signup,
     logout,

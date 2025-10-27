@@ -1,0 +1,122 @@
+/**
+ * Pending Approval Screen Styles
+ */
+
+.pending-approval {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.pending-approval-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 48px;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.pending-approval-icon {
+  color: #fbbf24;
+  margin-bottom: 24px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.pending-approval-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 24px;
+}
+
+.pending-approval-message {
+  text-align: left;
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.pending-approval-message p {
+  margin-bottom: 16px;
+}
+
+.pending-approval-message p:last-child {
+  margin-bottom: 0;
+}
+
+.pending-approval-email {
+  background: #f3f4f6;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.pending-approval-email strong {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.pending-approval-actions {
+  margin-bottom: 24px;
+}
+
+.pending-approval-logout-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pending-approval-logout-btn:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.pending-approval-logout-btn:active {
+  transform: translateY(0);
+}
+
+.pending-approval-help {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 24px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pending-approval-container {
+    padding: 32px 24px;
+  }
+
+  .pending-approval-title {
+    font-size: 24px;
+  }
+
+  .pending-approval-message {
+    font-size: 15px;
+  }
+}

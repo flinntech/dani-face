@@ -58,6 +58,7 @@ export class AuthService {
       const token = this.generateToken({
         userId: user.id,
         email: user.email,
+        role: user.role,
       });
 
       return {
@@ -98,6 +99,14 @@ export class AuthService {
         };
       }
 
+      // Check if user is pending approval
+      if (user.role === 'pending') {
+        return {
+          success: false,
+          message: 'Your account is pending approval. Please wait for an administrator to approve your account.',
+        };
+      }
+
       // Update last login
       await userDB.updateLastLogin(user.id);
 
@@ -105,6 +114,7 @@ export class AuthService {
       const token = this.generateToken({
         userId: user.id,
         email: user.email,
+        role: user.role,
       });
 
       return {

@@ -18,7 +18,7 @@ class UserDatabasePG {
     const query = `
       INSERT INTO users (id, email, password_hash, name, created_at)
       VALUES ($1, $2, $3, $4, $5)
-      RETURNING id, email, password_hash as "passwordHash", name,
+      RETURNING id, email, password_hash as "passwordHash", name, role,
                 created_at as "createdAt", last_login as "lastLogin",
                 is_active as "isActive"
     `;
@@ -37,7 +37,7 @@ class UserDatabasePG {
    */
   async findByEmail(email: string): Promise<User | null> {
     const query = `
-      SELECT id, email, password_hash as "passwordHash", name,
+      SELECT id, email, password_hash as "passwordHash", name, role,
              created_at as "createdAt", last_login as "lastLogin",
              is_active as "isActive"
       FROM users
@@ -52,7 +52,7 @@ class UserDatabasePG {
    */
   async findById(userId: string): Promise<User | null> {
     const query = `
-      SELECT id, email, password_hash as "passwordHash", name,
+      SELECT id, email, password_hash as "passwordHash", name, role,
              created_at as "createdAt", last_login as "lastLogin",
              is_active as "isActive"
       FROM users
@@ -110,6 +110,7 @@ class UserDatabasePG {
       id: user.id,
       email: user.email,
       name: user.name,
+      role: user.role,
       createdAt: user.createdAt,
       lastLogin: user.lastLogin,
     };
@@ -143,7 +144,7 @@ class UserDatabasePG {
       UPDATE users
       SET ${fields.join(', ')}
       WHERE id = $${paramIndex}
-      RETURNING id, email, password_hash as "passwordHash", name,
+      RETURNING id, email, password_hash as "passwordHash", name, role,
                 created_at as "createdAt", last_login as "lastLogin",
                 is_active as "isActive"
     `;

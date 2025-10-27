@@ -12,7 +12,10 @@ import chatRoutes from './routes/chat';
 import authRoutes from './routes/auth';
 import logsRoutes from './routes/logs';
 import settingsRoutes from './routes/settings';
+import adminRoutes from './routes/admin';
 import { db } from './services/Database';
+import { createMigrationService } from './services/MigrationService';
+import { migrations } from './migrations';
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -144,6 +147,7 @@ if (NODE_ENV === 'production') {
 app.use('/api/auth', authRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api', chatRoutes);
 
 // 404 handler for API routes
@@ -259,6 +263,13 @@ async function initializeApp() {
   try {
     console.log('🔄 Initializing database connection...');
     await db.connect();
+
+    console.log('🔄 Running database migrations...');
+    const migrationService = createMigrationService(db);
+    // Register all migrations
+    migrations.forEach(migration => migrationService.registerMigration(migration));
+    await migrationService.runMigrations();
+
     console.log('🚀 Starting servers...');
     startServers();
   } catch (error) {

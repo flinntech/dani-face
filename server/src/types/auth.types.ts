@@ -2,11 +2,14 @@
  * Authentication Types
  */
 
+import { UserRole } from './admin.types';
+
 export interface User {
   id: string;
   email: string;
   passwordHash: string;
   name: string;
+  role: UserRole;
   createdAt: string;
   lastLogin?: string;
 }
@@ -15,6 +18,7 @@ export interface UserResponse {
   id: string;
   email: string;
   name: string;
+  role: UserRole;
   createdAt: string;
   lastLogin?: string;
 }
@@ -40,4 +44,5 @@ export interface AuthResponse {
 export interface JWTPayload {
   userId: string;
   email: string;
+  role: UserRole;
 }
