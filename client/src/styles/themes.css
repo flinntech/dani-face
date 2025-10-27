@@ -1,0 +1,293 @@
+/**
+ * DANI Theme System
+ * Based on Digi Remote Manager Brand Guidelines
+ * Supports Light and Dark modes
+ */
+
+/* ============================================
+   DEFAULT (LIGHT MODE)
+   ============================================ */
+:root,
+[data-theme="light"] {
+  /* Digi Brand Colors - Base Palette */
+  --color-digi-green: #91D46C;
+  --color-digi-green-light: #BFE6AA;
+  --color-digi-green-dark: #479336;
+  --color-digi-green-darker: #237025;
+
+  --color-digi-blue-very-light: #E1F5FF;
+  --color-digi-blue-light: #B2E5FF;
+  --color-digi-blue-medium: #009BEF;
+  --color-digi-blue-dark: #0077C6;
+  --color-digi-blue-very-dark: #0057A3;
+  --color-digi-blue-darkest: #1B4965;
+
+  --color-digi-red: #CC3352;
+  --color-digi-red-light: #f2ccd4;
+  --color-digi-red-dark: #A2294A;
+
+  --color-digi-orange: #FC8F00;
+  --color-digi-orange-light: #ffe3be;
+  --color-digi-orange-medium: #F16E00;
+  --color-digi-orange-dark: #A2502D;
+
+  /* Gray Scale */
+  --gray-100: #EAF3F8;
+  --gray-200: #B8C1C6;
+  --gray-300: #9EA7AC;
+  --gray-400: #848D92;
+  --gray-500: #9B9EA1;
+  --gray-600: #525B60;
+  --gray-700: #3F4245;
+  --gray-800: #1E2124;
+  --gray-900: #121213;
+
+  /* Theme Colors - Light Mode */
+  --theme-bg: #F7FAFE;
+  --theme-surface: #FFFFFF;
+  --theme-surface-elevated: #FFFFFF;
+  --theme-color: #1E2124;
+  --theme-color-secondary: #727578;
+  --theme-color-muted: #9B9EA1;
+
+  /* Primary Colors */
+  --color-primary: #91D46C;
+  --color-primary-hover: #9DE476;
+  --color-secondary: #717174;
+
+  /* Semantic Colors */
+  --color-success: #479336;
+  --color-success-bg: #E2F3DF;
+  --color-warning: #FC8F00;
+  --color-warning-bg: #ffe3be;
+  --color-error: #CC3352;
+  --color-error-bg: #f2ccd4;
+  --color-info: #009BEF;
+  --color-info-bg: #E1F5FF;
+
+  /* Links */
+  --color-link: #0077C6;
+  --color-link-hover: #0057A3;
+
+  /* Backgrounds */
+  --color-background: #FFFFFF;
+  --color-surface: #EEF0F0;
+  --color-border: #EBEEF2;
+  --color-border-light: #E9ECEF;
+
+  /* User/Assistant Message Colors */
+  --color-user-bg: #127298;
+  --color-user-text: #FFFFFF;
+  --color-assistant-bg: #EEF0F0;
+  --color-assistant-border: #E9ECEF;
+
+  /* Navigation */
+  --color-nav-bg: #FFFFFF;
+  --color-nav-text: #1E2124;
+  --color-dark-blue: #127298;
+  --color-medium-blue: #00B7FF;
+  --color-light-blue: #E2F6FF;
+  --color-very-dark-blue: #1B4965;
+
+  /* Text Colors */
+  --color-text-primary: #4B4F53;
+  --color-text-secondary: #717174;
+  --color-text-muted: #9B9EA1;
+
+  /* Form Elements */
+  --input-bg: #FFFFFF;
+  --input-color: #1E2124;
+  --input-border: #EBEEF2;
+  --input-focus-border: #91D46C;
+  --input-disabled-bg: #F2F5F9;
+
+  /* Buttons */
+  --button-primary-bg: #91D46C;
+  --button-primary-hover: #9DE476;
+  --button-primary-text: #FFFFFF;
+  --button-secondary-bg: #F2F5F9;
+  --button-secondary-hover: #EBEEF2;
+  --button-secondary-text: #1E2124;
+
+  /* Tables */
+  --table-header-bg: #E1F5FF;
+  --table-header-color: #0077C6;
+  --table-row-bg: #FFFFFF;
+  --table-row-alt-bg: #F7F7F7;
+  --table-row-hover-bg: #F2F5F9;
+  --table-border: #EBEEF2;
+
+  /* Badges */
+  --badge-default-bg: #F2F5F9;
+  --badge-default-color: #3F4245;
+  --badge-default-border: #727578;
+  --badge-success-bg: #E2F3DF;
+  --badge-success-color: #237025;
+  --badge-success-border: #479336;
+  --badge-warning-bg: #ffe3be;
+  --badge-warning-color: #A2502D;
+  --badge-warning-border: #F16E00;
+  --badge-error-bg: #f2ccd4;
+  --badge-error-color: #7E2143;
+  --badge-error-border: #A2294A;
+  --badge-info-bg: #E1F5FF;
+  --badge-info-color: #0057A3;
+  --badge-info-border: #0077C6;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  /* Code Blocks */
+  --code-bg: #F5F5F5;
+  --code-color: #1E2124;
+  --code-border: #E0E0E0;
+
+  /* Modals */
+  --modal-bg: #FFFFFF;
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+  --modal-border: #EBEEF2;
+
+  /* Scrollbar */
+  --scrollbar-track: #EEF0F0;
+  --scrollbar-thumb: #717174;
+  --scrollbar-thumb-hover: #525B60;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+[data-theme="dark"] {
+  /* Theme Colors - Dark Mode */
+  --theme-bg: #121213;
+  --theme-surface: #1E2124;
+  --theme-surface-elevated: #3F4245;
+  --theme-color: #FFFFFF;
+  --theme-color-secondary: #9B9EA1;
+  --theme-color-muted: #727578;
+
+  /* Primary Colors */
+  --color-primary: #91D46C;
+  --color-primary-hover: #BFE6AA;
+  --color-secondary: #3F4245;
+
+  /* Semantic Colors - Dark Mode Adjusted */
+  --color-success: #479336;
+  --color-success-bg: #237025;
+  --color-warning: #FC8F00;
+  --color-warning-bg: #653900;
+  --color-error: #DC3854;
+  --color-error-bg: #521421;
+  --color-info: #00B7FF;
+  --color-info-bg: #1B4965;
+
+  /* Links */
+  --color-link: #00B7FF;
+  --color-link-hover: #B2E5FF;
+
+  /* Backgrounds */
+  --color-background: #121213;
+  --color-surface: #1E2124;
+  --color-border: #525B60;
+  --color-border-light: #3F4245;
+
+  /* User/Assistant Message Colors - Dark Mode */
+  --color-user-bg: #286584;
+  --color-user-text: #FFFFFF;
+  --color-assistant-bg: #2A2A2A;
+  --color-assistant-border: #3F4245;
+
+  /* Navigation */
+  --color-nav-bg: #1E2124;
+  --color-nav-text: rgba(255, 255, 255, 0.9);
+  --color-dark-blue: #286584;
+  --color-medium-blue: #00B7FF;
+  --color-light-blue: #1B4965;
+  --color-very-dark-blue: #0057A3;
+
+  /* Text Colors */
+  --color-text-primary: #E5E5E5;
+  --color-text-secondary: #A0A0A0;
+  --color-text-muted: #727578;
+
+  /* Form Elements */
+  --input-bg: #121213;
+  --input-color: #FFFFFF;
+  --input-border: #525B60;
+  --input-focus-border: #91D46C;
+  --input-disabled-bg: #3F4245;
+
+  /* Buttons */
+  --button-primary-bg: #91D46C;
+  --button-primary-hover: #BFE6AA;
+  --button-primary-text: #1E2124;
+  --button-secondary-bg: #525B60;
+  --button-secondary-hover: #3F4245;
+  --button-secondary-text: #FFFFFF;
+
+  /* Tables - DRM Style Dark Mode */
+  --table-header-bg: #1B4965;
+  --table-header-color: #00B7FF;
+  --table-row-bg: #1E2124;
+  --table-row-alt-bg: #1A1A1A;
+  --table-row-hover-bg: #3F4245;
+  --table-border: #3F4245;
+
+  /* Badges - Dark Mode */
+  --badge-default-bg: #727578;
+  --badge-default-color: #121213;
+  --badge-default-border: #9B9EA1;
+  --badge-success-bg: #237025;
+  --badge-success-color: #BFE6AA;
+  --badge-success-border: #479336;
+  --badge-warning-bg: #653900;
+  --badge-warning-color: #ffe3be;
+  --badge-warning-border: #FC8F00;
+  --badge-error-bg: #521421;
+  --badge-error-color: #f2ccd4;
+  --badge-error-border: #DC3854;
+  --badge-info-bg: #1B4965;
+  --badge-info-color: #B2E5FF;
+  --badge-info-border: #00B7FF;
+
+  /* Shadows - Lighter for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+
+  /* Code Blocks */
+  --code-bg: #1A1A1A;
+  --code-color: #E5E5E5;
+  --code-border: #3F4245;
+
+  /* Modals */
+  --modal-bg: #3F4245;
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --modal-border: #525B60;
+
+  /* Scrollbar */
+  --scrollbar-track: #1E2124;
+  --scrollbar-thumb: #525B60;
+  --scrollbar-thumb-hover: #727578;
+}
+
+/* ============================================
+   THEME TRANSITION
+   ============================================ */
+* {
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+/* Disable transition for elements that shouldn't animate */
+*:focus,
+*:active,
+input,
+textarea,
+select,
+button:active {
+  transition: none;
+}

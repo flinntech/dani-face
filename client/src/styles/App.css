@@ -3,7 +3,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-background);
+  background-color: var(--theme-bg);
 }
 
 /* App Navigation */
@@ -12,8 +12,9 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-md) var(--spacing-xl);
-  background: linear-gradient(135deg, var(--color-dark-blue) 0%, var(--color-very-dark-blue) 100%);
-  color: white;
+  background: var(--color-nav-bg);
+  color: var(--color-nav-text);
+  border-bottom: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
   z-index: 100;
 }
@@ -32,9 +33,9 @@
 
 .app-nav-link {
   padding: var(--spacing-sm) var(--spacing-lg);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--color-nav-text);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: 0.95rem;
   font-weight: 500;
@@ -43,13 +44,14 @@
 }
 
 .app-nav-link:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: var(--theme-surface);
+  border-color: var(--color-primary);
 }
 
 .app-nav-link.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
+  color: var(--button-primary-text);
 }
 
 .app-nav-user {
@@ -75,9 +77,9 @@
 
 .app-nav-logout {
   padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--color-nav-text);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   cursor: pointer;
@@ -87,6 +89,7 @@
 .app-nav-logout:hover {
   background: var(--color-error);
   border-color: var(--color-error);
+  color: white;
 }
 
 .app-content {
@@ -113,7 +116,7 @@
     width: 100%;
     justify-content: space-between;
     padding-top: var(--spacing-sm);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--color-border);
   }
 }
 

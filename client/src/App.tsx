@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ChatInterface from './components/ChatInterface';
 import { SettingsPage } from './components/SettingsPage';
 import { PendingApproval } from './components/PendingApproval';
@@ -99,13 +100,15 @@ const AppContent: React.FC = () => {
 };
 
 /**
- * Main App component with Auth Provider
+ * Main App component with Theme and Auth Providers
  */
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

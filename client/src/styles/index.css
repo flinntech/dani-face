@@ -3,34 +3,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,400;1,600;1,700;1,900&display=swap');
 
+/* Import theme system (light and dark modes) */
+@import './themes.css';
+
 :root {
-  /* Digi Brand Colors */
-  --color-primary: #91D46C;
-  --color-primary-hover: #9DE476;
-  --color-secondary: #717174;
-  --color-background: #ffffff;
-  --color-surface: #EEF0F0;
-  --color-border: #E9ECEF;
-  --color-text-primary: #4B4F53;
-  --color-text-secondary: #717174;
-  --color-error: #C25629;
-  --color-error-bg: #FFE5E5;
-  --color-success: #41823C;
-
-  /* Digi Blue Colors */
-  --color-dark-blue: #127298;
-  --color-medium-blue: #00B7FF;
-  --color-light-blue: #E2F6FF;
-  --color-very-dark-blue: #1B4965;
-
-  /* User message colors */
-  --color-user-bg: #127298;
-  --color-user-text: #ffffff;
-
-  /* Assistant message colors */
-  --color-assistant-bg: #EEF0F0;
-  --color-assistant-border: #E9ECEF;
-
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -43,11 +19,6 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 
   /* Typography - Digi Brand Font */
   --font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -78,8 +49,8 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--color-text-primary);
-  background-color: var(--color-background);
+  color: var(--theme-color);
+  background-color: var(--theme-bg);
   line-height: 1.5;
 }
 
@@ -106,12 +77,12 @@ button:disabled {
 }
 
 a {
-  color: var(--color-medium-blue);
+  color: var(--color-link);
   text-decoration: none;
 }
 
 a:hover {
-  color: var(--color-dark-blue);
+  color: var(--color-link-hover);
   text-decoration: underline;
 }
 
@@ -122,14 +93,14 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-surface);
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-secondary);
+  background: var(--scrollbar-thumb);
   border-radius: var(--radius-lg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-secondary);
+  background: var(--scrollbar-thumb-hover);
 }

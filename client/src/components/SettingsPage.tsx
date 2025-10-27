@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme, Theme } from '../context/ThemeContext';
 import {
   getUserServices,
   saveDrmApiKey,
@@ -18,6 +19,7 @@ interface SettingsPageProps {
 
 export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
   const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   // DRM API Key state
   const [drmKeyId, setDrmKeyId] = useState('');
@@ -148,6 +150,68 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
             {message.text}
           </div>
         )}
+
+        {/* Appearance Section */}
+        <div className="settings-section">
+          <h2>Appearance</h2>
+          <p className="section-description">
+            Customize the visual theme of the application. Changes apply immediately.
+          </p>
+
+          <div className="api-key-card">
+            <div className="card-header">
+              <h3>Theme</h3>
+            </div>
+
+            <p className="card-description">
+              Choose your preferred color theme for the application interface.
+            </p>
+
+            <div className="theme-selector">
+              <label className="theme-option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="light"
+                  checked={theme === 'light'}
+                  onChange={(e) => setTheme(e.target.value as Theme)}
+                />
+                <span className="theme-option-content">
+                  <strong>Light</strong>
+                  <small>Clean and bright interface</small>
+                </span>
+              </label>
+
+              <label className="theme-option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="dark"
+                  checked={theme === 'dark'}
+                  onChange={(e) => setTheme(e.target.value as Theme)}
+                />
+                <span className="theme-option-content">
+                  <strong>Dark</strong>
+                  <small>Reduce eye strain in low light</small>
+                </span>
+              </label>
+
+              <label className="theme-option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="auto"
+                  checked={theme === 'auto'}
+                  onChange={(e) => setTheme(e.target.value as Theme)}
+                />
+                <span className="theme-option-content">
+                  <strong>Auto</strong>
+                  <small>Match your system preference</small>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
 
         <div className="settings-section">
           <h2>API Keys</h2>
