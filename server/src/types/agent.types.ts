@@ -21,6 +21,30 @@ export interface TokenUsage {
 }
 
 /**
+ * Detailed information about a tool call execution
+ */
+export interface ToolCallDetail {
+  toolName: string;
+  server?: string;
+  input: Record<string, unknown>;
+  output: string;
+  timestamp: string;
+  duration: number;
+  isError: boolean;
+  iteration: number;
+}
+
+/**
+ * Reasoning step in the agentic loop
+ */
+export interface ReasoningStep {
+  iteration: number;
+  timestamp: string;
+  toolsRequested: string[];
+  thinking?: string;
+}
+
+/**
  * Chat response from the agent
  */
 export interface ChatResponse {
@@ -29,6 +53,8 @@ export interface ChatResponse {
   model: string;
   usage: TokenUsage;
   iterations: number;
+  toolCallDetails?: ToolCallDetail[];
+  reasoningSteps?: ReasoningStep[];
 }
 
 /**

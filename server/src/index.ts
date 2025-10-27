@@ -115,10 +115,22 @@ if (NODE_ENV === 'production') {
 
   // Check if build directory exists
   if (fs.existsSync(clientBuildPath)) {
-    // Serve static files with proper caching
+    // Serve static files with proper caching and MIME types
     app.use(express.static(clientBuildPath, {
       maxAge: '1d',
       etag: true,
+      setHeaders: (res, filePath) => {
+        // Ensure correct MIME types for all static assets
+        if (filePath.endsWith('.js')) {
+          res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+        } else if (filePath.endsWith('.css')) {
+          res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+        } else if (filePath.endsWith('.json')) {
+          res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+        } else if (filePath.endsWith('.html')) {
+          res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+        }
+      },
     }));
 
     console.log(`📁 Serving static files from: ${clientBuildPath}`);
@@ -142,10 +154,16 @@ app.use('/api/*', (req: Request, res: Response) => {
   });
 });
 
-// Serve React app for all non-API routes (must be LAST)
+// Serve React app for all non-API, non-static routes (must be LAST)
 if (NODE_ENV === 'production') {
   const clientBuildPath = '/app/client/build';
-  app.get('*', (req: Request, res: Response) => {
+  app.get('*', (req: Request, res: Response, next: NextFunction) => {
+    // Don't serve index.html for static file requests
+    // If the request is for a file with an extension in /static/, skip to 404
+    if (req.path.startsWith('/static/')) {
+      return next();
+    }
+
     const indexPath = path.join(clientBuildPath, 'index.html');
     if (fs.existsSync(indexPath)) {
       res.sendFile(indexPath);

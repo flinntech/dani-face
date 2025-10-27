@@ -128,6 +128,8 @@ const ChatInterface: React.FC = () => {
         usage: response.usage,
         model: response.model,
         iterations: response.iterations,
+        toolCallDetails: response.toolCallDetails,
+        reasoningSteps: response.reasoningSteps,
       };
 
       // Add assistant message to conversation
