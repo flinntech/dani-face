@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ChatInterface from './components/ChatInterface';
-import LogsViewer from './components/LogsViewer';
 import { SettingsPage } from './components/SettingsPage';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './styles/App.css';
 
-type AppPage = 'chat' | 'logs' | 'settings';
+type AppPage = 'chat' | 'settings';
 
 /**
  * Main App Content (inside AuthProvider)
@@ -57,12 +56,6 @@ const AppContent: React.FC = () => {
             Chat
           </button>
           <button
-            className={`app-nav-link ${currentPage === 'logs' ? 'active' : ''}`}
-            onClick={() => setCurrentPage('logs')}
-          >
-            Logs
-          </button>
-          <button
             className={`app-nav-link ${currentPage === 'settings' ? 'active' : ''}`}
             onClick={() => setCurrentPage('settings')}
           >
@@ -78,7 +71,6 @@ const AppContent: React.FC = () => {
       </nav>
       <div className="app-content">
         {currentPage === 'chat' && <ChatInterface />}
-        {currentPage === 'logs' && <LogsViewer />}
         {currentPage === 'settings' && <SettingsPage onBack={() => setCurrentPage('chat')} />}
       </div>
     </div>

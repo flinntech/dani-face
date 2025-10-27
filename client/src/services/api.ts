@@ -1,13 +1,5 @@
 import axios, { AxiosError } from 'axios';
 import { ChatRequest, ChatResponse, ErrorResponse } from '../types/message.types';
-import {
-  LogStreamResponse,
-  LogStatsResponse,
-  LogSearchResponse,
-  LogExportResponse,
-  LogType,
-  LogLevel
-} from '../types/logs.types';
 import { authService } from './authService';
 
 // API base URL - uses window.location for dynamic URL
@@ -79,103 +71,5 @@ export const checkHealth = async (): Promise<{ status: string; agentConnected: b
     return response.data;
   } catch (error) {
     throw new Error('Unable to connect to server');
-  }
-};
-
-/**
- * Logs API - Get log stream
- */
-export const getLogStream = async (
-  type: LogType = 'combined',
-  lines: number = 100,
-  level: LogLevel | 'all' = 'all'
-): Promise<LogStreamResponse> => {
-  try {
-    const response = await axios.get<LogStreamResponse>(
-      `${API_BASE_URL}/logs/stream`,
-      {
-        params: { type, lines, level },
-        headers: getAuthHeaders(),
-        timeout: 10000,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      throw new Error(axiosError.response?.data?.message || 'Failed to fetch logs');
-    }
-    throw new Error('Failed to fetch logs');
-  }
-};
-
-/**
- * Logs API - Get log statistics
- */
-export const getLogStats = async (): Promise<LogStatsResponse> => {
-  try {
-    const response = await axios.get<LogStatsResponse>(
-      `${API_BASE_URL}/logs/stats`,
-      {
-        headers: getAuthHeaders(),
-        timeout: 15000,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      throw new Error(axiosError.response?.data?.message || 'Failed to fetch log statistics');
-    }
-    throw new Error('Failed to fetch log statistics');
-  }
-};
-
-/**
- * Logs API - Search logs
- */
-export const searchLogs = async (
-  query: string,
-  lines: number = 50
-): Promise<LogSearchResponse> => {
-  try {
-    const response = await axios.get<LogSearchResponse>(
-      `${API_BASE_URL}/logs/search`,
-      {
-        params: { query, lines },
-        headers: getAuthHeaders(),
-        timeout: 15000,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      throw new Error(axiosError.response?.data?.message || 'Failed to search logs');
-    }
-    throw new Error('Failed to search logs');
-  }
-};
-
-/**
- * Logs API - Export logs
- */
-export const exportLogs = async (type: LogType = 'combined'): Promise<LogExportResponse> => {
-  try {
-    const response = await axios.get<LogExportResponse>(
-      `${API_BASE_URL}/logs/export`,
-      {
-        params: { type },
-        headers: getAuthHeaders(),
-        timeout: 30000,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      throw new Error(axiosError.response?.data?.message || 'Failed to export logs');
-    }
-    throw new Error('Failed to export logs');
   }
 };
