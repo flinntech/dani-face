@@ -26,10 +26,16 @@ const ENABLE_HTTPS = process.env.ENABLE_HTTPS === 'true';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 
+// Trust proxy - REQUIRED when behind AWS ALB/ELB
+// This allows Express to read X-Forwarded-* headers
+app.set('trust proxy', true);
+
 // Security: Helmet middleware with CSP
+// Disable CSP and strict headers when not using HTTPS (for AWS ALB HTTP-only setup)
 app.use(
   helmet({
-    contentSecurityPolicy: {
+    // Disable CSP entirely when using HTTP to avoid upgrade-insecure-requests
+    contentSecurityPolicy: ENABLE_HTTPS ? {
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'], // Allow inline styles and Google Fonts
@@ -41,17 +47,30 @@ app.use(
         mediaSrc: ["'self'"],
         frameSrc: ["'none'"],
       },
-    },
-    hsts: {
+    } : false,
+    // Only enable HSTS when using HTTPS
+    hsts: ENABLE_HTTPS ? {
       maxAge: 31536000,
       includeSubDomains: true,
       preload: true,
-    },
+    } : false,
+    // Disable headers that require HTTPS when using HTTP
+    crossOriginOpenerPolicy: ENABLE_HTTPS ? { policy: 'same-origin' } : false,
+    crossOriginResourcePolicy: ENABLE_HTTPS ? { policy: 'same-origin' } : false,
   })
 );
 
 // Compression middleware
 app.use(compression());
+
+// Prevent HTTPS upgrade when using HTTP (for AWS ALB without HTTPS)
+if (!ENABLE_HTTPS) {
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    // Remove any HTTPS upgrade headers
+    res.removeHeader('Upgrade-Insecure-Requests');
+    next();
+  });
+}
 
 // CORS configuration
 app.use(
@@ -77,6 +96,8 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip validation errors when behind ALB - we trust the proxy
+  validate: false,
 });
 
 app.use('/api/', limiter);
@@ -87,22 +108,31 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+// Serve static files from React app (must be BEFORE API routes)
+if (NODE_ENV === 'production') {
+  // Use absolute path to avoid path resolution issues
+  const clientBuildPath = '/app/client/build';
+
+  // Check if build directory exists
+  if (fs.existsSync(clientBuildPath)) {
+    // Serve static files with proper caching
+    app.use(express.static(clientBuildPath, {
+      maxAge: '1d',
+      etag: true,
+    }));
+
+    console.log(`📁 Serving static files from: ${clientBuildPath}`);
+    console.log(`📁 Files in build directory:`, fs.readdirSync(clientBuildPath));
+  } else {
+    console.error(`❌ Client build directory not found: ${clientBuildPath}`);
+  }
+}
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api', chatRoutes);
-
-// Serve static files from React app (in production)
-if (NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '../../client/build');
-  app.use(express.static(clientBuildPath));
-
-  // Serve React app for all non-API routes
-  app.get('*', (req: Request, res: Response) => {
-    res.sendFile(path.join(clientBuildPath, 'index.html'));
-  });
-}
 
 // 404 handler for API routes
 app.use('/api/*', (req: Request, res: Response) => {
@@ -111,6 +141,19 @@ app.use('/api/*', (req: Request, res: Response) => {
     message: 'The requested endpoint does not exist',
   });
 });
+
+// Serve React app for all non-API routes (must be LAST)
+if (NODE_ENV === 'production') {
+  const clientBuildPath = '/app/client/build';
+  app.get('*', (req: Request, res: Response) => {
+    const indexPath = path.join(clientBuildPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(500).send(`Server misconfiguration: index.html not found at ${indexPath}`);
+    }
+  });
+}
 
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

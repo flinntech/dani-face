@@ -27,8 +27,14 @@ export class Database {
       return;
     }
 
+    const dbHost = process.env.DB_HOST || 'localhost';
+
+    // Auto-detect AWS RDS and enable SSL
+    const isRDS = dbHost.includes('.rds.amazonaws.com');
+    const sslEnabled = process.env.DB_SSL === 'true' || isRDS;
+
     const config: PoolConfig = {
-      host: process.env.DB_HOST || 'localhost',
+      host: dbHost,
       port: parseInt(process.env.DB_PORT || '5432'),
       database: process.env.DB_NAME || 'dani',
       user: process.env.DB_USER || 'dani_user',
@@ -36,7 +42,7 @@ export class Database {
       max: 20, // Maximum number of clients in the pool
       idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
       connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection not available
-      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+      ssl: sslEnabled ? { rejectUnauthorized: false } : false,
     };
 
     this.pool = new Pool(config);
@@ -47,6 +53,10 @@ export class Database {
       console.log('✅ PostgreSQL connected successfully');
       console.log(`   Database: ${config.database}`);
       console.log(`   Host: ${config.host}:${config.port}`);
+      console.log(`   SSL: ${sslEnabled ? 'Enabled' : 'Disabled'}`);
+      if (isRDS) {
+        console.log(`   RDS detected - SSL auto-enabled`);
+      }
       client.release();
     } catch (error) {
       console.error('❌ PostgreSQL connection error:', error);

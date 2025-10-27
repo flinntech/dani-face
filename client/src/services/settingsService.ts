@@ -12,7 +12,8 @@ import {
   ServiceName,
 } from '../types/settings.types';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+// Use dynamic URL based on window.location (same as api.ts)
+const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api`;
 
 /**
  * Get authentication token from local storage

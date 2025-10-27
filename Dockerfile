@@ -44,6 +44,7 @@ COPY server/package*.json ./server/
 WORKDIR /app/server
 RUN npm ci --omit=dev
 
+# Switch back to /app as the working directory
 WORKDIR /app
 
 # Copy built server
@@ -51,6 +52,9 @@ COPY --from=server-builder /app/server/dist ./server/dist
 
 # Copy built client
 COPY --from=client-builder /app/client/build ./client/build
+
+# Verify the client build was copied
+RUN ls -la /app/client/build && echo "Client build files copied successfully"
 
 # Copy environment file template
 COPY .env.example ./.env.example

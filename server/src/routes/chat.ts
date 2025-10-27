@@ -149,12 +149,26 @@ router.post(
  * Health check endpoint
  */
 router.get('/health', async (req: Request, res: Response) => {
+  const fs = require('fs');
+  const path = require('path');
+
   const healthCheck = {
     status: 'healthy' as const,
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     agentConnected: false,
+    staticFilesExist: false,
+    buildPath: '',
   };
+
+  try {
+    // Check if static files exist (use absolute path)
+    const buildPath = '/app/client/build';
+    healthCheck.buildPath = buildPath;
+    healthCheck.staticFilesExist = fs.existsSync(buildPath);
+  } catch (error) {
+    console.warn('[Health] Could not check static files');
+  }
 
   try {
     // Try to ping the agent (with short timeout)

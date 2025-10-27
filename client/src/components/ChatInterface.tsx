@@ -43,6 +43,8 @@ const ChatInterface: React.FC = () => {
 
     // Get or create current conversation
     let currentId = getCurrentConversationId();
+    let currentConversation: StoredConversation | null = null;
+
     if (!currentId || !getConversation(loadedConversations, currentId)) {
       // No current conversation or it doesn't exist, create new one
       currentId = uuidv4();
@@ -50,14 +52,16 @@ const ChatInterface: React.FC = () => {
       setConversations([newConv, ...loadedConversations]);
       saveConversations([newConv, ...loadedConversations]);
       setCurrentConversationId(currentId);
+      currentConversation = newConv;
+    } else {
+      currentConversation = getConversation(loadedConversations, currentId);
     }
 
-    // Load the current conversation
-    const current = getConversation(loadedConversations, currentId);
-    if (current) {
+    // Load the current conversation (guaranteed to exist now)
+    if (currentConversation) {
       setConversation({
-        conversationId: current.id,
-        messages: current.messages,
+        conversationId: currentConversation.id,
+        messages: currentConversation.messages,
         isLoading: false,
         error: null,
       });
@@ -72,6 +76,16 @@ const ChatInterface: React.FC = () => {
   }, [conversations]);
 
   const handleSendMessage = async (content: string) => {
+    // Ensure we have a conversation ID
+    if (!conversation.conversationId) {
+      console.error('Cannot send message: No conversation ID');
+      setConversation((prev) => ({
+        ...prev,
+        error: 'Failed to initialize conversation. Please refresh the page.',
+      }));
+      return;
+    }
+
     // Create user message
     const userMessage: Message = {
       id: uuidv4(),

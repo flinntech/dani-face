@@ -43,3 +43,6 @@ coverage/
 # Misc
 .cache/
 .parcel-cache/
+
+# AWS Task Definitions with secrets
+task-definition*.json
