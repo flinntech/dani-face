@@ -4,9 +4,10 @@
 
 CREATE TABLE IF NOT EXISTS conversation_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    conversation_id VARCHAR(255),
-    message_id VARCHAR(255),
-    user_id VARCHAR(255) NOT NULL,
+    conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE,
+    message_id UUID,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     log_data JSONB NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -19,7 +20,7 @@ CREATE INDEX IF NOT EXISTS idx_conversation_logs_created_at ON conversation_logs
 CREATE INDEX IF NOT EXISTS idx_conversation_logs_feedback ON conversation_logs USING GIN ((log_data->'feedback'));
 
 -- Grant permissions
-GRANT ALL PRIVILEGES ON conversation_logs TO dani_user;
+GRANT ALL PRIVILEGES ON conversation_logs TO dani_db;
 
 -- Log initialization completion
 DO $$

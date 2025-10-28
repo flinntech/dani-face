@@ -14,6 +14,7 @@ import logsRoutes from './routes/logs';
 import settingsRoutes from './routes/settings';
 import adminRoutes from './routes/admin';
 import feedbackRoutes from './routes/feedback';
+import conversationsRoutes from './routes/conversations';
 import { db } from './services/Database';
 import { createMigrationService } from './services/MigrationService';
 import { migrations } from './migrations';
@@ -159,6 +160,7 @@ if (NODE_ENV === 'production') {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/conversations', conversationsRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/admin', adminRoutes);

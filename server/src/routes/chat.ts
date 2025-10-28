@@ -8,17 +8,21 @@ import { getEncryptionService } from '../services/EncryptionService';
 import { Database } from '../services/Database';
 import { ConversationLogger } from '../services/ConversationLogger';
 import { ConversationLogData } from '../types/conversation-log.types';
+import { ConversationService } from '../services/ConversationService';
+import { MessageService } from '../services/MessageService';
 
 const router = Router();
 
 // Agent URL from environment variables
 const AGENT_URL = process.env.AGENT_URL || 'http://dani-agent:8080/chat';
 
-// Initialize API keys database and conversation logger
+// Initialize services
 const db = Database.getInstance();
 const encryption = getEncryptionService();
 const apiKeysDb = new ApiKeysDatabase(db, encryption);
 const conversationLogger = new ConversationLogger(db);
+const conversationService = new ConversationService(db);
+const messageService = new MessageService(db);
 
 /**
  * POST /api/chat
@@ -56,13 +60,23 @@ router.post(
       return res.status(400).json(errorResponse);
     }
 
-    const { message, conversationId } = req.body as ChatRequest;
+    let { message, conversationId } = req.body as ChatRequest;
     const userId = req.user!.userId;
 
     // Capture start time for logging
     const startTime = new Date();
 
     try {
+      // Ensure conversation exists in database (create if needed)
+      let conversation = await conversationService.getConversation(conversationId, userId);
+      if (!conversation) {
+        console.log(`[Chat] Creating new conversation ${conversationId} for user ${userId}`);
+        // Auto-generate title from first part of message
+        const autoTitle = message.length > 50 ? message.substring(0, 47) + '...' : message;
+        conversation = await conversationService.createConversation(userId, autoTitle);
+        conversationId = conversation.id; // Use database-generated ID
+      }
+
       console.log(`[Chat] Sending message to agent for conversation ${conversationId}, user ${userId}`);
 
       // Fetch user's DRM API keys if configured
@@ -100,6 +114,37 @@ router.post(
 
       console.log(`[Chat] Received response from agent (${response.data.iterations} iterations)`);
 
+      // Save user message to database
+      let userMessageId: string | null = null;
+      try {
+        const userMessage = await messageService.createMessage(conversationId, 'user', message);
+        userMessageId = userMessage.id;
+        console.log(`[Chat] Saved user message ${userMessageId}`);
+      } catch (error) {
+        console.error('[Chat] Error saving user message:', error);
+        // Continue even if message save fails
+      }
+
+      // Save assistant message to database
+      let assistantMessageId: string | null = null;
+      try {
+        const assistantMessage = await messageService.createMessage(
+          conversationId,
+          'assistant',
+          response.data.response,
+          {
+            usage: response.data.usage,
+            model: response.data.model,
+            iterations: response.data.iterations,
+          }
+        );
+        assistantMessageId = assistantMessage.id;
+        console.log(`[Chat] Saved assistant message ${assistantMessageId}`);
+      } catch (error) {
+        console.error('[Chat] Error saving assistant message:', error);
+        // Continue even if message save fails
+      }
+
       // Log conversation execution flow and get log ID
       const endTime = new Date();
       let logId: string | null = null;
@@ -111,11 +156,20 @@ router.post(
           message,
           response.data,
           startTime,
-          endTime
+          endTime,
+          assistantMessageId // Pass message ID for reference
         );
       } catch (error) {
-        console.error('[Chat] Error logging conversation:', error);
-        // Don't let logging errors affect the response
+        console.error('[Chat] CRITICAL: Failed to log conversation to database:', error);
+        console.error('[Chat] Conversation context:', {
+          conversationId,
+          userId,
+          userEmail: req.user!.email || 'unknown',
+          messagePreview: message.substring(0, 100),
+          timestamp: new Date().toISOString()
+        });
+        // Don't let logging errors affect the response, but ensure visibility
+        // Check /tmp/dani-logs/ for fallback logs if this error persists
       }
 
       // Return agent response with logId
@@ -221,7 +275,8 @@ async function logConversationExecution(
   userQuery: string,
   agentResponse: ChatResponse,
   startTime: Date,
-  endTime: Date
+  endTime: Date,
+  messageId?: string | null
 ): Promise<string | null> {
   try {
     // Calculate execution time
@@ -285,7 +340,7 @@ async function logConversationExecution(
     // Log to database and return log ID
     const logId = await conversationLogger.logConversation(
       conversationId,
-      null, // message_id (not tracked in current implementation)
+      messageId || null, // message_id from saved assistant message
       userId,
       logData
     );

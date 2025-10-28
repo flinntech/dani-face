@@ -33,7 +33,7 @@ FOR EACH ROW
 EXECUTE FUNCTION update_api_key_timestamp();
 
 -- Grant permissions
-GRANT ALL PRIVILEGES ON user_api_keys TO dani_user;
+GRANT ALL PRIVILEGES ON user_api_keys TO dani_db;
 
 -- Log initialization
 DO $$

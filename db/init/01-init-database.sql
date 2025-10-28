@@ -104,9 +104,9 @@ LEFT JOIN usage_logs ul ON u.id = ul.user_id
 GROUP BY u.id, u.email, u.name, u.created_at, u.last_login;
 
 -- Grant permissions (adjust as needed for your user)
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO dani_user;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO dani_user;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO dani_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO dani_db;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO dani_db;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO dani_db;
 
 -- Insert a test user (password is "testpassword123" hashed with bcrypt)
 -- You can remove this after initial testing
