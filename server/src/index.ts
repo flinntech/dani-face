@@ -16,6 +16,12 @@ import adminRoutes from './routes/admin';
 import { db } from './services/Database';
 import { createMigrationService } from './services/MigrationService';
 import { migrations } from './migrations';
+import { StructuredLogger } from './shared/structured-logger';
+import {
+  requestTracingMiddleware,
+  conversationContextMiddleware,
+  errorLoggingMiddleware,
+} from './shared/request-tracing-middleware';
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -32,6 +38,13 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 // Trust proxy - REQUIRED when behind AWS ALB/ELB
 // This allows Express to read X-Forwarded-* headers
 app.set('trust proxy', true);
+
+// Create structured logger
+const logger = new StructuredLogger('dani-webchat', NODE_ENV === 'production' ? 'info' : 'debug');
+
+// Add request tracing middleware (MUST be early in middleware chain)
+app.use(requestTracingMiddleware({ logger }));
+app.use(conversationContextMiddleware());
 
 // Security: Helmet middleware with CSP
 // Disable CSP and strict headers when not using HTTPS (for AWS ALB HTTP-only setup)
@@ -157,6 +170,9 @@ app.use('/api/*', (req: Request, res: Response) => {
     message: 'The requested endpoint does not exist',
   });
 });
+
+// Error logging middleware (logs errors with full context)
+app.use(errorLoggingMiddleware());
 
 // Serve React app for all non-API, non-static routes (must be LAST)
 if (NODE_ENV === 'production') {
