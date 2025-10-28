@@ -55,6 +55,7 @@ export interface ChatResponse {
   iterations: number;
   toolCallDetails?: ToolCallDetail[];
   reasoningSteps?: ReasoningStep[];
+  logId?: string | null; // ID of the conversation log for feedback tracking
 }
 
 /**

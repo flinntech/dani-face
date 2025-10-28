@@ -13,6 +13,7 @@ import authRoutes from './routes/auth';
 import logsRoutes from './routes/logs';
 import settingsRoutes from './routes/settings';
 import adminRoutes from './routes/admin';
+import feedbackRoutes from './routes/feedback';
 import { db } from './services/Database';
 import { createMigrationService } from './services/MigrationService';
 import { migrations } from './migrations';
@@ -161,6 +162,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/feedback', feedbackRoutes);
 app.use('/api', chatRoutes);
 
 // 404 handler for API routes

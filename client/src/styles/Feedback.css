@@ -1,0 +1,250 @@
+/**
+ * Feedback Component Styles
+ * Unobtrusive feedback buttons for DANI responses
+ */
+
+.feedback-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+.feedback-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.feedback-button {
+  background: transparent;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary, #666);
+}
+
+.feedback-button:hover:not(:disabled) {
+  background: var(--hover-bg, #f5f5f5);
+  border-color: var(--border-hover, #ccc);
+  transform: translateY(-1px);
+}
+
+.feedback-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.feedback-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.feedback-button.selected {
+  background: var(--selected-bg, #e8f4fd);
+  border-color: var(--selected-border, #4a90e2);
+  color: var(--selected-text, #4a90e2);
+  font-weight: 500;
+}
+
+.feedback-button.positive.selected {
+  background: #e8f5e9;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+.feedback-button.negative.selected {
+  background: #ffebee;
+  border-color: #f44336;
+  color: #c62828;
+}
+
+.feedback-emoji {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.feedback-text {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.feedback-comment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feedback-comment-label {
+  font-size: 13px;
+  color: var(--text-secondary, #666);
+  font-weight: 500;
+}
+
+.feedback-comment-input {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.feedback-comment-input:focus {
+  outline: none;
+  border-color: var(--focus-border, #4a90e2);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+.feedback-comment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.feedback-submit-button {
+  background: var(--primary-color, #4a90e2);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.feedback-submit-button:hover:not(:disabled) {
+  background: var(--primary-hover, #357abd);
+}
+
+.feedback-submit-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.feedback-skip-button {
+  background: transparent;
+  color: var(--text-secondary, #666);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 4px;
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.feedback-skip-button:hover {
+  background: var(--hover-bg, #f5f5f5);
+  border-color: var(--border-hover, #ccc);
+}
+
+.feedback-status {
+  font-size: 13px;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.feedback-status.success {
+  color: #2e7d32;
+}
+
+.feedback-status.error {
+  color: #c62828;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .feedback-container {
+    border-top-color: #444;
+  }
+
+  .feedback-button {
+    border-color: #444;
+    color: #aaa;
+  }
+
+  .feedback-button:hover:not(:disabled) {
+    background: #2a2a2a;
+    border-color: #555;
+  }
+
+  .feedback-button.selected {
+    background: #1e3a5f;
+    border-color: #4a90e2;
+    color: #6fb3ff;
+  }
+
+  .feedback-button.positive.selected {
+    background: #1b3d1b;
+    border-color: #4caf50;
+    color: #81c784;
+  }
+
+  .feedback-button.negative.selected {
+    background: #3d1b1b;
+    border-color: #f44336;
+    color: #e57373;
+  }
+
+  .feedback-comment-label {
+    color: #aaa;
+  }
+
+  .feedback-comment-input {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #fff;
+  }
+
+  .feedback-comment-input:focus {
+    border-color: #4a90e2;
+  }
+
+  .feedback-skip-button {
+    border-color: #444;
+    color: #aaa;
+  }
+
+  .feedback-skip-button:hover {
+    background: #2a2a2a;
+    border-color: #555;
+  }
+
+  .feedback-status {
+    color: #aaa;
+  }
+
+  .feedback-status.success {
+    color: #81c784;
+  }
+
+  .feedback-status.error {
+    color: #e57373;
+  }
+}

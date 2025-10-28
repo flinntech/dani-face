@@ -4,6 +4,7 @@ import {
   Message,
   MessageRole,
   MessageStatus,
+  MessageFeedback,
   ConversationState,
   StoredConversation,
 } from '../types/message.types';
@@ -123,7 +124,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
       // Send message to agent
       const response = await sendChatMessage(content, conversation.conversationId);
 
-      // Create assistant message
+      // Create assistant message with logId for feedback tracking
       const assistantMessage: Message = {
         id: uuidv4(),
         role: MessageRole.ASSISTANT,
@@ -135,6 +136,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
         iterations: response.iterations,
         toolCallDetails: response.toolCallDetails,
         reasoningSteps: response.reasoningSteps,
+        logId: response.logId, // Store logId for feedback
       };
 
       // Add assistant message to conversation
@@ -241,6 +243,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
     }
   };
 
+  const handleFeedbackSubmitted = (messageId: string, feedback: MessageFeedback) => {
+    // Update the message with feedback in current conversation state
+    const updatedMessages = conversation.messages.map((msg) =>
+      msg.id === messageId ? { ...msg, feedback } : msg
+    );
+
+    setConversation((prev) => ({
+      ...prev,
+      messages: updatedMessages,
+    }));
+
+    // Update the conversation in storage
+    const updatedConversations = updateConversation(
+      conversations,
+      conversation.conversationId,
+      updatedMessages
+    );
+    setConversations(updatedConversations);
+  };
+
   return (
     <div className="chat-interface-with-sidebar">
       {/* Overlay for mobile - only show when sidebar is open on mobile */}
@@ -267,6 +289,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
             <MessageList
               messages={conversation.messages}
               isLoading={conversation.isLoading}
+              onFeedbackSubmitted={handleFeedbackSubmitted}
             />
           )}
         </main>

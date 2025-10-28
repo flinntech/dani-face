@@ -56,6 +56,15 @@ export interface ReasoningStep {
 }
 
 /**
+ * Feedback information for a message
+ */
+export interface MessageFeedback {
+  status: 'positive' | 'negative';
+  comment?: string;
+  timestamp?: string;
+}
+
+/**
  * Chat message structure
  */
 export interface Message {
@@ -69,6 +78,8 @@ export interface Message {
   iterations?: number;
   toolCallDetails?: ToolCallDetail[];
   reasoningSteps?: ReasoningStep[];
+  logId?: string | null; // ID of the conversation log for feedback tracking
+  feedback?: MessageFeedback; // User feedback for this message
 }
 
 /**
@@ -87,6 +98,7 @@ export interface ChatResponse {
   iterations: number;
   toolCallDetails?: ToolCallDetail[];
   reasoningSteps?: ReasoningStep[];
+  logId?: string | null; // ID of the conversation log for feedback tracking
 }
 
 export interface ErrorResponse {

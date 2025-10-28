@@ -100,23 +100,29 @@ router.post(
 
       console.log(`[Chat] Received response from agent (${response.data.iterations} iterations)`);
 
-      // Log conversation execution flow (async, non-blocking)
+      // Log conversation execution flow and get log ID
       const endTime = new Date();
-      logConversationExecution(
-        conversationId,
-        userId,
-        req.user!.email || 'unknown',
-        message,
-        response.data,
-        startTime,
-        endTime
-      ).catch((error) => {
+      let logId: string | null = null;
+      try {
+        logId = await logConversationExecution(
+          conversationId,
+          userId,
+          req.user!.email || 'unknown',
+          message,
+          response.data,
+          startTime,
+          endTime
+        );
+      } catch (error) {
         console.error('[Chat] Error logging conversation:', error);
         // Don't let logging errors affect the response
-      });
+      }
 
-      // Return agent response
-      res.json(response.data);
+      // Return agent response with logId
+      res.json({
+        ...response.data,
+        logId
+      });
     } catch (error) {
       console.error('[Chat] Error communicating with agent:', error);
 
@@ -206,6 +212,7 @@ router.get('/health', async (req: Request, res: Response) => {
 /**
  * Helper function to log conversation execution
  * Transforms agent response into structured log format
+ * Returns the log ID for feedback tracking
  */
 async function logConversationExecution(
   conversationId: string,
@@ -215,7 +222,7 @@ async function logConversationExecution(
   agentResponse: ChatResponse,
   startTime: Date,
   endTime: Date
-): Promise<void> {
+): Promise<string | null> {
   try {
     // Calculate execution time
     const executionTimeMs = endTime.getTime() - startTime.getTime();
@@ -275,13 +282,14 @@ async function logConversationExecution(
       },
     };
 
-    // Log to database
-    await conversationLogger.logConversation(
+    // Log to database and return log ID
+    const logId = await conversationLogger.logConversation(
       conversationId,
       null, // message_id (not tracked in current implementation)
       userId,
       logData
     );
+    return logId;
   } catch (error) {
     console.error('[Chat] Failed to log conversation execution:', error);
     throw error;
