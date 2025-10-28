@@ -6,16 +6,19 @@ import { requireAuth, AuthRequest } from '../middleware/auth.middleware';
 import { ApiKeysDatabase } from '../services/ApiKeysDatabase';
 import { getEncryptionService } from '../services/EncryptionService';
 import { Database } from '../services/Database';
+import { ConversationLogger } from '../services/ConversationLogger';
+import { ConversationLogData } from '../types/conversation-log.types';
 
 const router = Router();
 
 // Agent URL from environment variables
 const AGENT_URL = process.env.AGENT_URL || 'http://dani-agent:8080/chat';
 
-// Initialize API keys database
+// Initialize API keys database and conversation logger
 const db = Database.getInstance();
 const encryption = getEncryptionService();
 const apiKeysDb = new ApiKeysDatabase(db, encryption);
+const conversationLogger = new ConversationLogger(db);
 
 /**
  * POST /api/chat
@@ -56,6 +59,9 @@ router.post(
     const { message, conversationId } = req.body as ChatRequest;
     const userId = req.user!.userId;
 
+    // Capture start time for logging
+    const startTime = new Date();
+
     try {
       console.log(`[Chat] Sending message to agent for conversation ${conversationId}, user ${userId}`);
 
@@ -93,6 +99,21 @@ router.post(
       );
 
       console.log(`[Chat] Received response from agent (${response.data.iterations} iterations)`);
+
+      // Log conversation execution flow (async, non-blocking)
+      const endTime = new Date();
+      logConversationExecution(
+        conversationId,
+        userId,
+        req.user!.email || 'unknown',
+        message,
+        response.data,
+        startTime,
+        endTime
+      ).catch((error) => {
+        console.error('[Chat] Error logging conversation:', error);
+        // Don't let logging errors affect the response
+      });
 
       // Return agent response
       res.json(response.data);
@@ -181,5 +202,90 @@ router.get('/health', async (req: Request, res: Response) => {
 
   res.json(healthCheck);
 });
+
+/**
+ * Helper function to log conversation execution
+ * Transforms agent response into structured log format
+ */
+async function logConversationExecution(
+  conversationId: string,
+  userId: string,
+  username: string,
+  userQuery: string,
+  agentResponse: ChatResponse,
+  startTime: Date,
+  endTime: Date
+): Promise<void> {
+  try {
+    // Calculate execution time
+    const executionTimeMs = endTime.getTime() - startTime.getTime();
+
+    // Transform agent response into log data structure
+    const logData: ConversationLogData = {
+      username,
+      start_time: startTime.toISOString(),
+      end_time: endTime.toISOString(),
+      execution_time_ms: executionTimeMs,
+      query: {
+        original_text: userQuery,
+        analyzer_output: {
+          selected_model: agentResponse.model || 'unknown',
+          complexity_level: 'SIMPLE', // Default, will be populated if available
+          reasoning: undefined,
+        },
+      },
+      execution: {
+        tool_calls: agentResponse.toolCallDetails?.map((tool) => ({
+          tool_name: tool.toolName || '',
+          server: tool.server || '',
+          input: tool.input || {},
+          output: tool.output || {},
+          timestamp: tool.timestamp || new Date().toISOString(),
+          execution_time_ms: tool.duration || 0,
+          iteration: tool.iteration || 0,
+          is_error: tool.isError || false,
+          error_message: tool.isError ? String(tool.output) : undefined,
+        })) || [],
+        reasoning_steps: agentResponse.reasoningSteps?.map((step, index) => ({
+          iteration: step.iteration || 0,
+          timestamp: step.timestamp || new Date().toISOString(),
+          tools_requested: step.toolsRequested || [],
+          thinking_content: step.thinking,
+          step_order: index,
+        })) || [],
+        iterations: agentResponse.iterations || 1,
+      },
+      response: {
+        final_text: agentResponse.response || '',
+        model_used: agentResponse.model || 'unknown',
+        usage: {
+          input_tokens: agentResponse.usage?.input_tokens || 0,
+          output_tokens: agentResponse.usage?.output_tokens || 0,
+          cache_creation_tokens: agentResponse.usage?.cache_creation_tokens,
+          cache_read_tokens: agentResponse.usage?.cache_read_tokens,
+        },
+      },
+      feedback: {
+        status: null, // Will be updated later when feedback feature is implemented
+        comment: undefined,
+        timestamp: undefined,
+      },
+      metadata: {
+        agent_url: AGENT_URL,
+      },
+    };
+
+    // Log to database
+    await conversationLogger.logConversation(
+      conversationId,
+      null, // message_id (not tracked in current implementation)
+      userId,
+      logData
+    );
+  } catch (error) {
+    console.error('[Chat] Failed to log conversation execution:', error);
+    throw error;
+  }
+}
 
 export default router;

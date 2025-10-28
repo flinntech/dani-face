@@ -1,0 +1,116 @@
+/* LogExport Styles */
+
+.export-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+
+.export-modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.radio-label {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.radio-label:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+}
+
+.radio-label input[type="radio"] {
+  margin-right: 10px;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.radio-label input[type="radio"]:disabled {
+  cursor: not-allowed;
+}
+
+.radio-label input[type="radio"]:disabled ~ * {
+  opacity: 0.5;
+}
+
+.radio-label > span:first-of-type {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.format-desc {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-left: 24px;
+}
+
+/* Export Info */
+.export-info {
+  background: #e7f3ff;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #b3d7ff;
+  margin-bottom: 15px;
+}
+
+.export-info div {
+  margin-bottom: 8px;
+}
+
+.export-info div:last-child {
+  margin-bottom: 0;
+}
+
+/* Warning Box */
+.warning-box {
+  background: #fff3cd;
+  padding: 12px 15px;
+  border-radius: 6px;
+  border: 1px solid #ffc107;
+  color: #856404;
+  margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .export-modal {
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}

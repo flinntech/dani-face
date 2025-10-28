@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
 import { ConfirmationModal } from './ConfirmationModal';
+import ConversationLogsPanel from './ConversationLogsPanel';
 import {
   AdminUser,
   AdminStats,
@@ -15,7 +16,7 @@ import {
 } from '../../types/admin.types';
 import '../../styles/Admin.css';
 
-type AdminView = 'dashboard' | 'users' | 'logs';
+type AdminView = 'dashboard' | 'users' | 'logs' | 'conversation-logs';
 
 interface AdminPanelProps {
   onBack: () => void;
@@ -240,6 +241,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack }) => {
           User Management
         </button>
         <button
+          className={`admin-nav-btn ${currentView === 'conversation-logs' ? 'active' : ''}`}
+          onClick={() => setCurrentView('conversation-logs')}
+        >
+          Conversation Logs
+        </button>
+        <button
           className={`admin-nav-btn ${currentView === 'logs' ? 'active' : ''}`}
           onClick={() => setCurrentView('logs')}
         >
@@ -424,6 +431,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack }) => {
                   </table>
                 </div>
               </div>
+            )}
+
+            {currentView === 'conversation-logs' && (
+              <ConversationLogsPanel />
             )}
 
             {currentView === 'logs' && (
