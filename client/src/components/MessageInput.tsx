@@ -77,9 +77,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
           </svg>
         </button>
       </div>
-      <div className="input-hint">
-        Press Enter to send, Shift+Enter for new line
-      </div>
     </form>
   );
 };

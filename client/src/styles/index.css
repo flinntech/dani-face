@@ -47,11 +47,12 @@ body {
 
 body {
   font-family: var(--font-sans);
+  font-size: 1rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--theme-color);
   background-color: var(--theme-bg);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 #root {

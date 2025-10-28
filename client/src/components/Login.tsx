@@ -39,7 +39,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
       <div className="auth-card">
         <div className="auth-header">
           <h1>Welcome to DANI</h1>
-          <p>Sign in to continue</p>
+          <p>Digi Artificial Network Intelligence</p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">

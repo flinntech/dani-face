@@ -76,10 +76,10 @@
   --color-border-light: #E9ECEF;
 
   /* User/Assistant Message Colors */
-  --color-user-bg: #127298;
-  --color-user-text: #FFFFFF;
-  --color-assistant-bg: #EEF0F0;
-  --color-assistant-border: #E9ECEF;
+  --color-user-bg: #91D46C;
+  --color-user-text: #1E2124;
+  --color-assistant-bg: #FFFFFF;
+  --color-assistant-border: #EBEEF2;
 
   /* Navigation */
   --color-nav-bg: #FFFFFF;
@@ -134,10 +134,16 @@
   --badge-info-color: #0057A3;
   --badge-info-border: #0077C6;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  /* Shadows - Subtle for modern minimal look */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  --shadow-md: 0 2px 4px 0 rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 4px 8px 0 rgb(0 0 0 / 0.08);
+
+  /* Layout Variables */
+  --header-height: 48px;
+  --sidebar-width: 260px;
+  --message-max-width: 800px;
+  --message-spacing: 1rem;
 
   /* Code Blocks */
   --code-bg: #F5F5F5;
@@ -193,10 +199,10 @@
   --color-border-light: #3F4245;
 
   /* User/Assistant Message Colors - Dark Mode */
-  --color-user-bg: #286584;
-  --color-user-text: #FFFFFF;
-  --color-assistant-bg: #2A2A2A;
-  --color-assistant-border: #3F4245;
+  --color-user-bg: #91D46C;
+  --color-user-text: #1E2124;
+  --color-assistant-bg: #333333;
+  --color-assistant-border: #525B60;
 
   /* Navigation */
   --color-nav-bg: #1E2124;
@@ -251,10 +257,10 @@
   --badge-info-color: #B2E5FF;
   --badge-info-border: #00B7FF;
 
-  /* Shadows - Lighter for dark mode */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  /* Shadows - Subtle for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-md: 0 2px 4px 0 rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 4px 8px 0 rgb(0 0 0 / 0.4);
 
   /* Code Blocks */
   --code-bg: #1A1A1A;

@@ -10,7 +10,7 @@ const WelcomeMessage: React.FC = () => {
       <div className="welcome-header">
         <h1>👋 Welcome to DANI</h1>
         <p className="welcome-subtitle">
-          Your Digi Remote Manager and Network Infrastructure Assistant
+          Digi Artificial Network Intelligence
         </p>
       </div>
 

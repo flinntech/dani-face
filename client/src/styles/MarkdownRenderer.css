@@ -52,18 +52,20 @@
 
 /* Paragraphs */
 .markdown-content p {
-  margin: var(--spacing-md) 0;
+  margin: var(--spacing-lg) 0;
+  line-height: 1.7;
 }
 
 /* Lists */
 .markdown-content ul,
 .markdown-content ol {
-  margin: var(--spacing-md) 0;
+  margin: var(--spacing-lg) 0;
   padding-left: var(--spacing-xl);
 }
 
 .markdown-content li {
-  margin: var(--spacing-xs) 0;
+  margin: var(--spacing-sm) 0;
+  line-height: 1.7;
 }
 
 .markdown-content li > ul,

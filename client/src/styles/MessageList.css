@@ -1,14 +1,17 @@
 .message-list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--message-spacing);
+  max-width: var(--message-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
 }
 
 .message {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  animation: fadeIn 0.3s ease-in;
+  animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
@@ -27,23 +30,24 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 .message-role {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--theme-color-secondary);
 }
 
 .message-timestamp {
-  font-size: 0.75rem;
-  color: var(--theme-color-secondary);
+  font-size: 0.6875rem;
+  color: var(--theme-color-muted);
 }
 
 .message-content {
   padding: var(--spacing-md);
   border-radius: var(--radius-lg);
-  max-width: 85%;
+  line-height: 1.6;
 }
 
 /* User messages */
@@ -51,7 +55,8 @@
   background-color: var(--color-user-bg);
   color: var(--color-user-text);
   margin-left: auto;
-  border-bottom-right-radius: var(--radius-sm);
+  max-width: 75%;
+  box-shadow: var(--shadow-sm);
 }
 
 .user-message-text {
@@ -63,7 +68,8 @@
 .message-assistant .message-content {
   background-color: var(--color-assistant-bg);
   border: 1px solid var(--color-assistant-border);
-  border-bottom-left-radius: var(--radius-sm);
+  color: var(--theme-color);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Message states */
@@ -95,18 +101,18 @@
   align-items: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-xs) var(--spacing-sm);
-  background-color: var(--theme-surface);
+  background-color: transparent;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--theme-color-secondary);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   transition: all var(--transition-fast);
 }
 
 .copy-button:hover {
-  background-color: var(--theme-bg);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  background-color: var(--theme-surface);
+  border-color: var(--theme-color-secondary);
+  color: var(--theme-color);
 }
 
 /* Token info */
@@ -187,8 +193,19 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
+  .message-list {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+
   .message-content {
-    max-width: 95%;
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+
+  .message-user .message-content {
+    max-width: 85%;
+  }
+
+  .message-assistant .message-content {
+    max-width: 100%;
   }
 }

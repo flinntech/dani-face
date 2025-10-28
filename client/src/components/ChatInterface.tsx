@@ -24,10 +24,15 @@ import {
 } from '../services/conversationStorage';
 import '../styles/ChatInterface.css';
 
+interface ChatInterfaceProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+}
+
 /**
  * Main chat interface component with conversation history
  */
-const ChatInterface: React.FC = () => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [conversations, setConversations] = useState<StoredConversation[]>([]);
   const [conversation, setConversation] = useState<ConversationState>({
     conversationId: '',
@@ -208,6 +213,8 @@ const ChatInterface: React.FC = () => {
         isLoading: false,
         error: null,
       });
+      // Close sidebar on mobile after selecting conversation
+      setSidebarOpen(false);
     }
   };
 
@@ -236,13 +243,22 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="chat-interface-with-sidebar">
+      {/* Overlay for mobile - only show when sidebar is open on mobile */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'visible' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
       <ConversationSidebar
         conversations={conversations}
         currentConversationId={conversation.conversationId}
         onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
         onDeleteConversation={handleDeleteConversation}
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
+
       <div className="chat-interface">
         <main className="chat-main">
           {conversation.messages.length === 0 ? (
@@ -262,7 +278,7 @@ const ChatInterface: React.FC = () => {
             placeholder={
               conversation.isLoading
                 ? 'Waiting for response...'
-                : 'Ask DANI anything about your network infrastructure...'
+                : 'Ask DANI (Digi Artificial Network Intelligence) anything about your network infrastructure...'
             }
           />
           <div className="footer-disclaimer">

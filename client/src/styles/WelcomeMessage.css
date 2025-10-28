@@ -42,15 +42,16 @@
 
 .capability-card {
   padding: var(--spacing-lg);
-  background-color: var(--color-surface);
+  background-color: var(--theme-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   transition: all var(--transition-base);
 }
 
 .capability-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 .capability-icon {
@@ -74,7 +75,7 @@
 
 .getting-started {
   padding: var(--spacing-lg);
-  background-color: var(--color-surface);
+  background-color: var(--theme-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-xl);
