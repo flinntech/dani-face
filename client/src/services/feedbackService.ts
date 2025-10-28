@@ -43,7 +43,7 @@ export async function submitFeedback(
   status: 'positive' | 'negative',
   comment?: string
 ): Promise<SubmitFeedbackResponse> {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('dani_auth_token');
 
   if (!token) {
     throw new Error('Authentication required');
@@ -71,7 +71,7 @@ export async function submitFeedback(
  * Get feedback for a specific conversation log
  */
 export async function getFeedback(logId: string): Promise<GetFeedbackResponse> {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('dani_auth_token');
 
   if (!token) {
     throw new Error('Authentication required');

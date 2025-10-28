@@ -58,7 +58,7 @@ export class MessageService {
   ): Promise<Message[]> {
     const limitClause = limit ? `LIMIT $2` : '';
     const offsetClause = offset ? `OFFSET $3` : '';
-    const params = [conversationId];
+    const params: any[] = [conversationId];
 
     if (limit) params.push(limit);
     if (offset) params.push(offset);

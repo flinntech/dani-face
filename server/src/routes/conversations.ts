@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { ConversationService } from '../services/ConversationService';
 import { MessageService } from '../services/MessageService';
 import { Database } from '../services/Database';
-import { authenticateToken } from '../middleware/auth';
+import { requireAuth } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
@@ -15,9 +15,9 @@ const messageService = new MessageService(db);
  * POST /api/conversations
  * Create a new conversation
  */
-router.post('/', authenticateToken, async (req: Request, res: Response) => {
+router.post('/', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
     const { title } = req.body;
 
     const conversation = await conversationService.createConversation(userId, title);
@@ -33,9 +33,9 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
  * GET /api/conversations
  * Get all conversations for the authenticated user
  */
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get('/', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 50;
     const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
     const includeArchived = req.query.includeArchived === 'true';
@@ -68,9 +68,9 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
  * GET /api/conversations/:id
  * Get a single conversation with all its messages
  */
-router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.get('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
     const { id } = req.params;
 
     const conversation = await conversationService.getConversationWithMessages(id, userId);
@@ -90,9 +90,9 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
  * PATCH /api/conversations/:id
  * Update a conversation (title, archive status)
  */
-router.patch('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.patch('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
     const { id } = req.params;
     const { title, is_archived } = req.body;
 
@@ -117,9 +117,9 @@ router.patch('/:id', authenticateToken, async (req: Request, res: Response) => {
  * POST /api/conversations/:id/archive
  * Archive a conversation
  */
-router.post('/:id/archive', authenticateToken, async (req: Request, res: Response) => {
+router.post('/:id/archive', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
     const { id } = req.params;
 
     const success = await conversationService.archiveConversation(id, userId);
@@ -139,9 +139,9 @@ router.post('/:id/archive', authenticateToken, async (req: Request, res: Respons
  * POST /api/conversations/:id/unarchive
  * Unarchive a conversation
  */
-router.post('/:id/unarchive', authenticateToken, async (req: Request, res: Response) => {
+router.post('/:id/unarchive', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
     const { id } = req.params;
 
     const success = await conversationService.unarchiveConversation(id, userId);
@@ -161,9 +161,9 @@ router.post('/:id/unarchive', authenticateToken, async (req: Request, res: Respo
  * DELETE /api/conversations/:id
  * Soft delete a conversation
  */
-router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.delete('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
     const { id } = req.params;
 
     const success = await conversationService.deleteConversation(id, userId);
@@ -183,9 +183,9 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
  * GET /api/conversations/:id/messages
  * Get messages for a specific conversation
  */
-router.get('/:id/messages', authenticateToken, async (req: Request, res: Response) => {
+router.get('/:id/messages', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
     const { id } = req.params;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
     const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : undefined;
