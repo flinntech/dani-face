@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--modal-overlay);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,11 +14,11 @@
 }
 
 .export-modal {
-  background: white;
+  background: var(--modal-bg);
   border-radius: 8px;
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Form Groups */
@@ -31,6 +31,7 @@
   font-weight: 600;
   margin-bottom: 10px;
   font-size: 0.95rem;
+  color: var(--theme-color);
 }
 
 .radio-group {
@@ -43,15 +44,16 @@
   display: flex;
   flex-direction: column;
   padding: 12px 15px;
-  border: 2px solid #dee2e6;
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
+  color: var(--theme-color);
 }
 
 .radio-label:hover {
-  border-color: #007bff;
-  background: #f8f9fa;
+  border-color: var(--color-primary);
+  background: var(--theme-surface-elevated);
 }
 
 .radio-label input[type="radio"] {
@@ -75,16 +77,16 @@
 
 .format-desc {
   font-size: 0.85rem;
-  color: #6c757d;
+  color: var(--theme-color-secondary);
   margin-left: 24px;
 }
 
 /* Export Info */
 .export-info {
-  background: #e7f3ff;
+  background: var(--color-info-bg);
   padding: 15px;
   border-radius: 6px;
-  border: 1px solid #b3d7ff;
+  border: 1px solid var(--badge-info-border);
   margin-bottom: 15px;
 }
 
@@ -98,11 +100,11 @@
 
 /* Warning Box */
 .warning-box {
-  background: #fff3cd;
+  background: var(--badge-warning-bg);
   padding: 12px 15px;
   border-radius: 6px;
-  border: 1px solid #ffc107;
-  color: #856404;
+  border: 1px solid var(--badge-warning-border);
+  color: var(--badge-warning-color);
   margin-bottom: 15px;
 }
 

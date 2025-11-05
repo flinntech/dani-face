@@ -99,12 +99,58 @@ export interface ChatResponse {
   toolCallDetails?: ToolCallDetail[];
   reasoningSteps?: ReasoningStep[];
   logId?: string | null; // ID of the conversation log for feedback tracking
+  userMessageId?: string | null; // ID of the saved user message in database
+  assistantMessageId?: string | null; // ID of the saved assistant message in database
 }
 
 export interface ErrorResponse {
   error: string;
   message: string;
   statusCode?: number;
+}
+
+/**
+ * Backend conversation structure (from database)
+ */
+export interface BackendConversation {
+  id: string;
+  user_id: string;
+  title: string | null;
+  created_at: string;
+  updated_at: string;
+  is_archived: boolean;
+  deleted_at: string | null;
+}
+
+/**
+ * Backend message structure (from database)
+ */
+export interface BackendMessage {
+  id: string;
+  role: string;
+  content: string;
+  created_at: string;
+  metadata: any;
+}
+
+/**
+ * Backend conversation with messages (from database)
+ */
+export interface BackendConversationWithMessages extends BackendConversation {
+  messages: BackendMessage[];
+}
+
+/**
+ * Response from /api/conversations endpoint
+ */
+export interface ConversationsListResponse {
+  conversations: BackendConversation[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
 }
 
 /**

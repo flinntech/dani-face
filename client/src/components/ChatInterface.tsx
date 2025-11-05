@@ -8,7 +8,13 @@ import {
   ConversationState,
   StoredConversation,
 } from '../types/message.types';
-import { sendChatMessage } from '../services/api';
+import {
+  sendChatMessage,
+  fetchConversations,
+  fetchConversationWithMessages,
+  createConversation as createConversationAPI,
+  deleteConversation as deleteConversationAPI,
+} from '../services/api';
 import ConversationSidebar from './ConversationSidebar';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
@@ -20,9 +26,12 @@ import {
   setCurrentConversationId,
   createConversation,
   updateConversation,
-  deleteConversation as deleteConversationFromStorage,
   getConversation,
 } from '../services/conversationStorage';
+import {
+  backendConversationToFrontend,
+  backendConversationToFrontendWithoutMessages,
+} from '../services/conversationUtils';
 import '../styles/ChatInterface.css';
 
 interface ChatInterfaceProps {
@@ -42,36 +51,103 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
     error: null,
   });
 
-  // Load conversations on mount
+  // Load conversations on mount - fetch from backend first, fallback to localStorage
   useEffect(() => {
-    const loadedConversations = loadConversations();
-    setConversations(loadedConversations);
+    const loadConversationsFromBackend = async () => {
+      try {
+        setConversation((prev) => ({ ...prev, isLoading: true }));
 
-    // Get or create current conversation
-    let currentId = getCurrentConversationId();
-    let currentConversation: StoredConversation | null = null;
+        // Fetch conversations from backend
+        const response = await fetchConversations(50, 0, false);
 
-    if (!currentId || !getConversation(loadedConversations, currentId)) {
-      // No current conversation or it doesn't exist, create new one
-      currentId = uuidv4();
-      const newConv = createConversation(currentId);
-      setConversations([newConv, ...loadedConversations]);
-      saveConversations([newConv, ...loadedConversations]);
-      setCurrentConversationId(currentId);
-      currentConversation = newConv;
-    } else {
-      currentConversation = getConversation(loadedConversations, currentId);
-    }
+        if (response.conversations.length === 0) {
+          // No conversations in backend, create a new one
+          const newConv = await createConversationAPI();
+          const frontendConv = backendConversationToFrontendWithoutMessages(newConv);
+          setConversations([frontendConv]);
+          saveConversations([frontendConv]); // Cache to localStorage
+          setCurrentConversationId(frontendConv.id);
+          setConversation({
+            conversationId: frontendConv.id,
+            messages: [],
+            isLoading: false,
+            error: null,
+          });
+        } else {
+          // Convert backend conversations to frontend format
+          const frontendConversations = response.conversations.map(
+            backendConversationToFrontendWithoutMessages
+          );
+          setConversations(frontendConversations);
+          saveConversations(frontendConversations); // Cache to localStorage
 
-    // Load the current conversation (guaranteed to exist now)
-    if (currentConversation) {
-      setConversation({
-        conversationId: currentConversation.id,
-        messages: currentConversation.messages,
-        isLoading: false,
-        error: null,
-      });
-    }
+          // Get or set current conversation
+          let currentId: string = getCurrentConversationId() || frontendConversations[0].id;
+          const currentExists = frontendConversations.find((c) => c.id === currentId);
+
+          if (!currentExists) {
+            // Current conversation doesn't exist in backend, use the first one
+            currentId = frontendConversations[0].id;
+          }
+
+          // Ensure current ID is saved
+          setCurrentConversationId(currentId);
+
+          // Load messages for the current conversation
+          const conversationWithMessages = await fetchConversationWithMessages(currentId);
+          const fullConversation = backendConversationToFrontend(conversationWithMessages);
+
+          // Update conversations list with loaded messages
+          const updatedConversations = frontendConversations.map((c) =>
+            c.id === currentId ? fullConversation : c
+          );
+          setConversations(updatedConversations);
+          saveConversations(updatedConversations); // Update cache
+
+          setConversation({
+            conversationId: fullConversation.id,
+            messages: fullConversation.messages,
+            isLoading: false,
+            error: null,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load conversations from backend:', error);
+
+        // Fallback to localStorage if backend fetch fails
+        const cachedConversations = loadConversations();
+        if (cachedConversations.length > 0) {
+          setConversations(cachedConversations);
+          const currentId = getCurrentConversationId();
+          const currentConv = currentId
+            ? getConversation(cachedConversations, currentId) || cachedConversations[0]
+            : cachedConversations[0];
+
+          setConversation({
+            conversationId: currentConv.id,
+            messages: currentConv.messages,
+            isLoading: false,
+            error: null,
+          });
+          setCurrentConversationId(currentConv.id);
+        } else {
+          // No cached conversations and backend failed, create a local-only conversation
+          const newId = uuidv4();
+          const newConv = createConversation(newId);
+          setConversations([newConv]);
+          saveConversations([newConv]);
+          setCurrentConversationId(newId);
+          setConversation({
+            conversationId: newId,
+            messages: [],
+            isLoading: false,
+            error: 'Unable to load conversations. Working offline.',
+          });
+        }
+      }
+    };
+
+    loadConversationsFromBackend();
   }, []);
 
   // Save conversations whenever they change
@@ -124,9 +200,28 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
       // Send message to agent
       const response = await sendChatMessage(content, conversation.conversationId);
 
+      // Update conversation ID if backend returned a different one (first message in conversation)
+      const dbConversationId = response.conversationId;
+      if (dbConversationId && dbConversationId !== conversation.conversationId) {
+        console.log('Syncing conversation ID from backend:', dbConversationId);
+        setConversation((prev) => ({
+          ...prev,
+          conversationId: dbConversationId,
+        }));
+        setCurrentConversationId(dbConversationId);
+
+        // Update the conversation ID in the conversations list
+        const updatedConversations = conversations.map((c) =>
+          c.id === conversation.conversationId ? { ...c, id: dbConversationId } : c
+        );
+        setConversations(updatedConversations);
+        saveConversations(updatedConversations);
+      }
+
       // Create assistant message with logId for feedback tracking
+      // Use database message IDs if provided
       const assistantMessage: Message = {
-        id: uuidv4(),
+        id: response.assistantMessageId || uuidv4(),
         role: MessageRole.ASSISTANT,
         content: response.response,
         timestamp: new Date(),
@@ -139,18 +234,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
         logId: response.logId, // Store logId for feedback
       };
 
-      // Add assistant message to conversation
-      const finalMessages = [...sentMessages, assistantMessage];
+      // Update user message ID with database ID if provided
+      const finalMessages = [
+        ...sentMessages.map((msg) =>
+          msg.id === userMessage.id && response.userMessageId
+            ? { ...msg, id: response.userMessageId }
+            : msg
+        ),
+        assistantMessage,
+      ];
+
       setConversation((prev) => ({
         ...prev,
         messages: finalMessages,
         isLoading: false,
+        conversationId: dbConversationId || prev.conversationId,
       }));
 
-      // Update conversation history
+      // Update conversation history with the database conversation ID
       const updatedConversations = updateConversation(
         conversations,
-        conversation.conversationId,
+        dbConversationId || conversation.conversationId,
         finalMessages
       );
       setConversations(updatedConversations);
@@ -191,38 +295,110 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
     }
   };
 
-  const handleNewConversation = () => {
-    const newConversationId = uuidv4();
-    const newConv = createConversation(newConversationId);
+  const handleNewConversation = async () => {
+    try {
+      // Create conversation in backend first
+      const backendConv = await createConversationAPI();
+      const newConv = backendConversationToFrontendWithoutMessages(backendConv);
 
-    setConversations([newConv, ...conversations]);
-    setCurrentConversationId(newConversationId);
-    setConversation({
-      conversationId: newConversationId,
-      messages: [],
-      isLoading: false,
-      error: null,
-    });
+      setConversations([newConv, ...conversations]);
+      saveConversations([newConv, ...conversations]); // Update cache
+      setCurrentConversationId(newConv.id);
+      setConversation({
+        conversationId: newConv.id,
+        messages: [],
+        isLoading: false,
+        error: null,
+      });
+    } catch (error) {
+      console.error('Failed to create conversation in backend:', error);
+
+      // Fallback to local-only conversation if API fails
+      const newConversationId = uuidv4();
+      const newConv = createConversation(newConversationId);
+
+      setConversations([newConv, ...conversations]);
+      saveConversations([newConv, ...conversations]);
+      setCurrentConversationId(newConversationId);
+      setConversation({
+        conversationId: newConversationId,
+        messages: [],
+        isLoading: false,
+        error: null,
+      });
+    }
   };
 
-  const handleSelectConversation = (conversationId: string) => {
+  const handleSelectConversation = async (conversationId: string) => {
     const selected = getConversation(conversations, conversationId);
-    if (selected) {
-      setCurrentConversationId(conversationId);
+    if (!selected) return;
+
+    setCurrentConversationId(conversationId);
+
+    // If messages already loaded (from cache), use them immediately
+    if (selected.messages.length > 0) {
       setConversation({
         conversationId: selected.id,
         messages: selected.messages,
         isLoading: false,
         error: null,
       });
-      // Close sidebar on mobile after selecting conversation
       setSidebarOpen(false);
+      return;
     }
+
+    // Messages not loaded, fetch from backend
+    try {
+      setConversation({
+        conversationId: selected.id,
+        messages: [],
+        isLoading: true,
+        error: null,
+      });
+
+      const conversationWithMessages = await fetchConversationWithMessages(conversationId);
+      const fullConversation = backendConversationToFrontend(conversationWithMessages);
+
+      // Update conversations list with loaded messages
+      const updatedConversations = conversations.map((c) =>
+        c.id === conversationId ? fullConversation : c
+      );
+      setConversations(updatedConversations);
+      saveConversations(updatedConversations); // Update cache
+
+      setConversation({
+        conversationId: fullConversation.id,
+        messages: fullConversation.messages,
+        isLoading: false,
+        error: null,
+      });
+    } catch (error) {
+      console.error('Failed to load conversation messages:', error);
+      setConversation({
+        conversationId: selected.id,
+        messages: [],
+        isLoading: false,
+        error: 'Failed to load messages. Please try again.',
+      });
+    }
+
+    // Close sidebar on mobile after selecting conversation
+    setSidebarOpen(false);
   };
 
-  const handleDeleteConversation = (conversationId: string) => {
-    const updatedConversations = deleteConversationFromStorage(conversations, conversationId);
+  const handleDeleteConversation = async (conversationId: string) => {
+    try {
+      // Delete from backend first
+      await deleteConversationAPI(conversationId);
+    } catch (error) {
+      console.error('Failed to delete conversation from backend:', error);
+      // Continue with local deletion even if backend fails
+    }
+
+    // Delete from local state regardless of backend result
+    const updatedConversations = conversations.filter((c) => c.id !== conversationId);
     setConversations(updatedConversations);
+    saveConversations(updatedConversations); // Update cache
 
     // If we deleted the current conversation, switch to another or create new
     if (conversationId === conversation.conversationId) {
@@ -238,7 +414,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sidebarOpen, setSidebarOp
         });
       } else {
         // No conversations left, create a new one
-        handleNewConversation();
+        await handleNewConversation();
       }
     }
   };

@@ -79,6 +79,20 @@ router.post(
 
       console.log(`[Chat] Sending message to agent for conversation ${conversationId}, user ${userId}`);
 
+      // Retrieve conversation history from database
+      let conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+      try {
+        const messages = await messageService.getConversationMessages(conversationId);
+        conversationHistory = messages.map(msg => ({
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content,
+        }));
+        console.log(`[Chat] Retrieved ${conversationHistory.length} messages from conversation history`);
+      } catch (error) {
+        console.error('[Chat] Error retrieving conversation history:', error);
+        // Continue without history - agent will use in-memory storage
+      }
+
       // Fetch user's DRM API keys if configured
       let drmApiKeys: { apiKeyId: string; apiKeySecret: string } | undefined;
       try {
@@ -95,7 +109,7 @@ router.post(
         // Continue without API keys rather than failing the request
       }
 
-      // Forward request to DANI agent
+      // Forward request to DANI agent with conversation history
       const response = await axios.post<ChatResponse>(
         AGENT_URL,
         {
@@ -103,6 +117,7 @@ router.post(
           conversationId,
           userId,
           drmApiKeys,
+          messages: conversationHistory.length > 0 ? conversationHistory : undefined,
         },
         {
           headers: {
@@ -172,10 +187,13 @@ router.post(
         // Check /tmp/dani-logs/ for fallback logs if this error persists
       }
 
-      // Return agent response with logId
+      // Return agent response with logId and conversation/message metadata
       res.json({
         ...response.data,
-        logId
+        logId,
+        conversationId, // Return the database conversation ID
+        userMessageId,
+        assistantMessageId,
       });
     } catch (error) {
       console.error('[Chat] Error communicating with agent:', error);

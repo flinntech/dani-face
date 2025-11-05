@@ -1,5 +1,13 @@
 import axios, { AxiosError } from 'axios';
-import { ChatRequest, ChatResponse, ErrorResponse } from '../types/message.types';
+import {
+  ChatRequest,
+  ChatResponse,
+  ErrorResponse,
+  BackendConversation,
+  BackendConversationWithMessages,
+  ConversationsListResponse,
+  BackendMessage,
+} from '../types/message.types';
 import { authService } from './authService';
 
 // API base URL - uses window.location for dynamic URL
@@ -71,5 +79,201 @@ export const checkHealth = async (): Promise<{ status: string; agentConnected: b
     return response.data;
   } catch (error) {
     throw new Error('Unable to connect to server');
+  }
+};
+
+/**
+ * Fetch all conversations for the authenticated user
+ */
+export const fetchConversations = async (
+  limit: number = 50,
+  offset: number = 0,
+  includeArchived: boolean = false
+): Promise<ConversationsListResponse> => {
+  try {
+    const response = await axios.get<ConversationsListResponse>(
+      `${API_BASE_URL}/conversations`,
+      {
+        params: { limit, offset, includeArchived: includeArchived.toString() },
+        headers: getAuthHeaders(),
+        timeout: 10000,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 401) {
+        throw new Error('Unauthorized. Please log in again.');
+      }
+      if (axiosError.response?.data) {
+        throw new Error(axiosError.response.data.message || 'Failed to fetch conversations');
+      }
+    }
+    throw new Error('Failed to fetch conversations');
+  }
+};
+
+/**
+ * Fetch a single conversation with all its messages
+ */
+export const fetchConversationWithMessages = async (
+  conversationId: string
+): Promise<BackendConversationWithMessages> => {
+  try {
+    const response = await axios.get<BackendConversationWithMessages>(
+      `${API_BASE_URL}/conversations/${conversationId}`,
+      {
+        headers: getAuthHeaders(),
+        timeout: 10000,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 401) {
+        throw new Error('Unauthorized. Please log in again.');
+      }
+      if (axiosError.response?.status === 404) {
+        throw new Error('Conversation not found');
+      }
+      if (axiosError.response?.data) {
+        throw new Error(axiosError.response.data.message || 'Failed to fetch conversation');
+      }
+    }
+    throw new Error('Failed to fetch conversation');
+  }
+};
+
+/**
+ * Fetch messages for a specific conversation
+ */
+export const fetchConversationMessages = async (
+  conversationId: string,
+  limit?: number,
+  offset?: number
+): Promise<BackendMessage[]> => {
+  try {
+    const response = await axios.get<{ messages: BackendMessage[] }>(
+      `${API_BASE_URL}/conversations/${conversationId}/messages`,
+      {
+        params: { limit, offset },
+        headers: getAuthHeaders(),
+        timeout: 10000,
+      }
+    );
+    return response.data.messages;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 401) {
+        throw new Error('Unauthorized. Please log in again.');
+      }
+      if (axiosError.response?.status === 404) {
+        throw new Error('Conversation not found');
+      }
+      if (axiosError.response?.data) {
+        throw new Error(axiosError.response.data.message || 'Failed to fetch messages');
+      }
+    }
+    throw new Error('Failed to fetch messages');
+  }
+};
+
+/**
+ * Create a new conversation
+ */
+export const createConversation = async (title?: string): Promise<BackendConversation> => {
+  try {
+    const response = await axios.post<BackendConversation>(
+      `${API_BASE_URL}/conversations`,
+      { title },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
+        timeout: 10000,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 401) {
+        throw new Error('Unauthorized. Please log in again.');
+      }
+      if (axiosError.response?.data) {
+        throw new Error(axiosError.response.data.message || 'Failed to create conversation');
+      }
+    }
+    throw new Error('Failed to create conversation');
+  }
+};
+
+/**
+ * Update a conversation (title or archive status)
+ */
+export const updateConversation = async (
+  conversationId: string,
+  updates: { title?: string; is_archived?: boolean }
+): Promise<BackendConversation> => {
+  try {
+    const response = await axios.patch<BackendConversation>(
+      `${API_BASE_URL}/conversations/${conversationId}`,
+      updates,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
+        timeout: 10000,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 401) {
+        throw new Error('Unauthorized. Please log in again.');
+      }
+      if (axiosError.response?.status === 404) {
+        throw new Error('Conversation not found');
+      }
+      if (axiosError.response?.data) {
+        throw new Error(axiosError.response.data.message || 'Failed to update conversation');
+      }
+    }
+    throw new Error('Failed to update conversation');
+  }
+};
+
+/**
+ * Delete a conversation
+ */
+export const deleteConversation = async (conversationId: string): Promise<void> => {
+  try {
+    await axios.delete(
+      `${API_BASE_URL}/conversations/${conversationId}`,
+      {
+        headers: getAuthHeaders(),
+        timeout: 10000,
+      }
+    );
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 401) {
+        throw new Error('Unauthorized. Please log in again.');
+      }
+      if (axiosError.response?.status === 404) {
+        throw new Error('Conversation not found');
+      }
+      if (axiosError.response?.data) {
+        throw new Error(axiosError.response.data.message || 'Failed to delete conversation');
+      }
+    }
+    throw new Error('Failed to delete conversation');
   }
 };

@@ -106,19 +106,19 @@
 .settings-section h2 {
   margin: 0 0 8px 0;
   font-size: 20px;
-  color: #1f2937;
+  color: var(--theme-color);
 }
 
 .section-description {
   margin: 0 0 24px 0;
-  color: #6b7280;
+  color: var(--theme-color-secondary);
   font-size: 14px;
   line-height: 1.5;
 }
 
 .api-key-card {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--theme-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
@@ -134,7 +134,7 @@
 .card-header h3 {
   margin: 0;
   font-size: 18px;
-  color: #1f2937;
+  color: var(--theme-color);
 }
 
 .status-badge {
@@ -145,24 +145,24 @@
 }
 
 .status-badge.configured {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--badge-success-bg);
+  color: var(--badge-success-color);
 }
 
 .status-badge.not-configured {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--badge-error-bg);
+  color: var(--badge-error-color);
 }
 
 .card-description {
   margin: 0 0 16px 0;
-  color: #6b7280;
+  color: var(--theme-color-secondary);
   font-size: 14px;
   line-height: 1.5;
 }
 
 .card-description a {
-  color: #667eea;
+  color: var(--color-link);
   text-decoration: none;
 }
 
@@ -172,7 +172,7 @@
 
 .last-updated {
   margin: 0 0 16px 0;
-  color: #9ca3af;
+  color: var(--theme-color-muted);
   font-size: 12px;
   font-style: italic;
 }
@@ -188,7 +188,7 @@
 .form-group label {
   display: block;
   margin-bottom: 6px;
-  color: #374151;
+  color: var(--theme-color);
   font-size: 14px;
   font-weight: 500;
 }
@@ -197,21 +197,23 @@
 .form-group input[type="password"] {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
   font-size: 14px;
   transition: border-color 0.2s;
   box-sizing: border-box;
+  background: var(--input-bg);
+  color: var(--input-color);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px rgba(145, 212, 108, 0.1);
 }
 
 .form-group input:disabled {
-  background: #f3f4f6;
+  background: var(--input-disabled-bg);
   cursor: not-allowed;
 }
 
@@ -264,29 +266,29 @@
 }
 
 .save-button {
-  background: #667eea;
-  color: white;
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
 }
 
 .save-button:hover:not(:disabled) {
-  background: #5568d3;
+  background: var(--button-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 .save-button:disabled {
-  background: #d1d5db;
+  background: var(--button-secondary-bg);
   cursor: not-allowed;
 }
 
 .delete-button {
-  background: #f3f4f6;
-  color: #ef4444;
-  border: 1px solid #ef4444;
+  background: var(--button-secondary-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
 }
 
 .delete-button:hover:not(:disabled) {
-  background: #fee2e2;
+  background: var(--color-error-bg);
 }
 
 .delete-button:disabled {

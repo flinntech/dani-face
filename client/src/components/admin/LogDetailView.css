@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--modal-overlay);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,14 +16,14 @@
 }
 
 .log-detail-modal {
-  background: white;
+  background: var(--modal-bg);
   border-radius: 8px;
   max-width: 900px;
   width: 100%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 .modal-header {
@@ -31,12 +31,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--modal-border);
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 1.25rem;
+  color: var(--theme-color);
 }
 
 .close-button {
@@ -45,14 +46,14 @@
   font-size: 2rem;
   line-height: 1;
   cursor: pointer;
-  color: #6c757d;
+  color: var(--theme-color-muted);
   padding: 0;
   width: 32px;
   height: 32px;
 }
 
 .close-button:hover {
-  color: #000;
+  color: var(--theme-color);
 }
 
 .modal-body {
@@ -63,7 +64,7 @@
 
 .modal-footer {
   padding: 15px 20px;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--modal-border);
   display: flex;
   justify-content: flex-end;
 }
@@ -72,7 +73,7 @@
 .detail-section {
   margin-bottom: 25px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .detail-section:last-child {
@@ -83,7 +84,7 @@
   margin-top: 0;
   margin-bottom: 15px;
   font-size: 1.1rem;
-  color: #212529;
+  color: var(--theme-color);
 }
 
 .section-header {
@@ -99,8 +100,8 @@
 
 .btn-copy {
   padding: 4px 12px;
-  background: #6c757d;
-  color: white;
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
   border: none;
   border-radius: 4px;
   font-size: 0.875rem;
@@ -108,7 +109,7 @@
 }
 
 .btn-copy:hover {
-  background: #545b62;
+  background: var(--button-secondary-hover);
 }
 
 /* Metadata Grid */
@@ -121,28 +122,30 @@
 
 .metadata-grid div {
   padding: 8px;
-  background: #f8f9fa;
+  background: var(--theme-surface);
   border-radius: 4px;
+  color: var(--theme-color);
 }
 
 /* Query & Response Boxes */
 .query-box,
 .response-box {
-  background: #f8f9fa;
+  background: var(--code-bg);
   padding: 15px;
   border-radius: 4px;
   white-space: pre-wrap;
   font-family: inherit;
   line-height: 1.6;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--code-border);
+  color: var(--code-color);
 }
 
 /* Analyzer Box */
 .analyzer-box {
-  background: #e7f3ff;
+  background: var(--color-info-bg);
   padding: 15px;
   border-radius: 4px;
-  border: 1px solid #b3d7ff;
+  border: 1px solid var(--badge-info-border);
 }
 
 .analyzer-box div {
@@ -156,32 +159,33 @@
 /* Tool Calls */
 .tool-call-details {
   margin-bottom: 10px;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .tool-call-details summary {
   padding: 12px 15px;
-  background: #f8f9fa;
+  background: var(--theme-surface);
   cursor: pointer;
   user-select: none;
   display: flex;
   align-items: center;
   gap: 10px;
+  color: var(--theme-color);
 }
 
 .tool-call-details summary:hover {
-  background: #e9ecef;
+  background: var(--theme-surface-elevated);
 }
 
 .tool-call-details[open] summary {
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .error-badge {
-  background: #dc3545;
-  color: white;
+  background: var(--color-error);
+  color: var(--button-primary-text);
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 0.75rem;
@@ -203,29 +207,30 @@
 }
 
 .tool-section pre {
-  background: #f8f9fa;
+  background: var(--code-bg);
   padding: 10px;
   border-radius: 4px;
   overflow-x: auto;
   font-size: 0.85rem;
   margin: 0;
+  color: var(--code-color);
 }
 
 .tool-meta {
   display: flex;
   gap: 20px;
   font-size: 0.85rem;
-  color: #6c757d;
+  color: var(--theme-color-secondary);
   padding-top: 10px;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid var(--color-border-light);
 }
 
 /* Reasoning Steps */
 .reasoning-step {
-  background: #fff3cd;
+  background: var(--badge-warning-bg);
   padding: 15px;
   border-radius: 4px;
-  border: 1px solid #ffc107;
+  border: 1px solid var(--badge-warning-border);
   margin-bottom: 10px;
 }
 
@@ -239,13 +244,14 @@
 }
 
 .thinking-content pre {
-  background: white;
+  background: var(--theme-surface);
   padding: 10px;
   border-radius: 4px;
   overflow-x: auto;
   font-size: 0.85rem;
   margin-top: 5px;
   white-space: pre-wrap;
+  color: var(--theme-color);
 }
 
 /* Token Grid */
@@ -256,9 +262,10 @@
 }
 
 .token-grid div {
-  background: #f8f9fa;
+  background: var(--theme-surface);
   padding: 10px;
   border-radius: 4px;
+  color: var(--theme-color);
 }
 
 /* Responsive */

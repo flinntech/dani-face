@@ -205,13 +205,13 @@
 }
 
 .tool-badge-success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: var(--badge-success-bg);
+  color: var(--badge-success-color);
 }
 
 .tool-badge-error {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: var(--badge-error-bg);
+  color: var(--badge-error-color);
 }
 
 .server-badge {
@@ -261,13 +261,13 @@
 }
 
 .status-success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: var(--badge-success-bg);
+  color: var(--badge-success-color);
 }
 
 .status-error {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: var(--badge-error-bg);
+  color: var(--badge-error-color);
 }
 
 /* Input/Output Sections */
@@ -334,45 +334,42 @@
   }
 }
 
-/* Dark mode support (if implemented) */
-@media (prefers-color-scheme: dark) {
-  /* Only apply dark background when expanded */
-  .tool-call-details[open] {
-    background-color: #1e1e1e;
-    border-color: #444;
-  }
+/* Dark mode support - Using theme system instead of media query */
+[data-theme="dark"] .tool-call-details[open] {
+  background-color: var(--theme-surface);
+  border-color: var(--color-border);
+}
 
-  .tool-call-summary {
-    color: #aaa;
-  }
+[data-theme="dark"] .tool-call-summary {
+  color: var(--theme-color-secondary);
+}
 
-  .tool-call-summary:hover {
-    color: #66b3ff;
-  }
+[data-theme="dark"] .tool-call-summary:hover {
+  color: var(--color-primary-hover);
+}
 
-  .tool-call-details[open] .tool-call-summary {
-    border-bottom-color: #444;
-  }
+[data-theme="dark"] .tool-call-details[open] .tool-call-summary {
+  border-bottom-color: var(--color-border);
+}
 
-  .tool-call-header h4 {
-    color: #eee;
-  }
+[data-theme="dark"] .tool-call-header h4 {
+  color: var(--theme-color);
+}
 
-  .reasoning-step,
-  .tool-call {
-    background-color: #2a2a2a;
-    border-color: #444;
-  }
+[data-theme="dark"] .reasoning-step,
+[data-theme="dark"] .tool-call {
+  background-color: var(--theme-surface-elevated);
+  border-color: var(--color-border);
+}
 
-  .thinking-content,
-  .code-block {
-    background-color: #1a1a1a;
-    color: #ddd;
-  }
+[data-theme="dark"] .thinking-content,
+[data-theme="dark"] .code-block {
+  background-color: var(--code-bg);
+  color: var(--code-color);
+}
 
-  .tool-input-section,
-  .tool-output-section {
-    background-color: #252525;
-    border-color: #3a3a3a;
-  }
+[data-theme="dark"] .tool-input-section,
+[data-theme="dark"] .tool-output-section {
+  background-color: var(--theme-surface-elevated);
+  border-color: var(--color-border-light);
 }

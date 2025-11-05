@@ -5,7 +5,7 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 export interface SubmitFeedbackRequest {
   logId: string;
@@ -50,7 +50,7 @@ export async function submitFeedback(
   }
 
   const response = await axios.post<SubmitFeedbackResponse>(
-    `${API_BASE_URL}/api/feedback`,
+    `${API_BASE_URL}/feedback`,
     {
       logId,
       status,
@@ -78,7 +78,7 @@ export async function getFeedback(logId: string): Promise<GetFeedbackResponse> {
   }
 
   const response = await axios.get<GetFeedbackResponse>(
-    `${API_BASE_URL}/api/feedback/${logId}`,
+    `${API_BASE_URL}/feedback/${logId}`,
     {
       headers: {
         'Authorization': `Bearer ${token}`,

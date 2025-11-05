@@ -56,6 +56,8 @@ export interface ChatResponse {
   toolCallDetails?: ToolCallDetail[];
   reasoningSteps?: ReasoningStep[];
   logId?: string | null; // ID of the conversation log for feedback tracking
+  userMessageId?: string | null; // ID of the saved user message in database
+  assistantMessageId?: string | null; // ID of the saved assistant message in database
 }
 
 /**
